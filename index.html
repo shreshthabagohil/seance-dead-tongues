@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="/icons/icon-192.png" type="image/png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Séance: Dead Tongues</title>
+    <meta name="description" content="The ghost of SNOBOL4 answers from the beyond — offline, in your browser." />
+
+    <!--
+      Content-Security-Policy (meta fallback for GitHub Pages, which cannot set real headers).
+      Codeberg Pages uses public/_headers for the real header — this meta is the backup.
+
+      Directives explained:
+        default-src 'self'                 — only same-origin by default
+        script-src 'self' 'wasm-unsafe-eval' — 'wasm-unsafe-eval' for WebAssembly (WebLLM)
+        worker-src 'self' blob:            — workers are same-origin or blob: (WebLLM spins blob workers)
+        connect-src 'self'
+          https://huggingface.co           — model weight download
+          https://cdn-lfs.huggingface.co   — LFS pointer files
+          https://cdn-lfs-us-1.huggingface.co — US LFS CDN
+          https://huggingface.co/...       — HF model pages
+          blob:                            — internal blob transfers
+        style-src 'self' 'unsafe-inline'  — Vite inlines critical CSS; no external sheets
+        img-src 'self' data:               — data: for inline icons
+        font-src 'self'                    — fonts bundled locally
+        object-src 'none'                  — block <object>/<embed>
+        base-uri 'self'                    — prevent base-tag injection
+        frame-ancestors 'none'             — no framing (clickjacking)
+        form-action 'self'                 — forms only submit to same origin
+    -->
+    <meta http-equiv="Content-Security-Policy" content="
+      default-src 'self';
+      script-src 'self' 'wasm-unsafe-eval';
+      worker-src 'self' blob:;
+      connect-src 'self'
+        https://huggingface.co
+        https://cdn-lfs.huggingface.co
+        https://cdn-lfs-us-1.huggingface.co
+        blob:;
+      style-src 'self' 'unsafe-inline';
+      img-src 'self' data:;
+      font-src 'self';
+      object-src 'none';
+      base-uri 'self';
+      frame-ancestors 'none';
+      form-action 'self';
+    " />
+
+    <!-- PWA -->
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="theme-color" content="#0d0d12" />
+    <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

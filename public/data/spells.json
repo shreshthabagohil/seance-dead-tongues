@@ -1,0 +1,44 @@
+[
+  {
+    "id": "SP-01",
+    "name": "Echo the Dark",
+    "description": "The ghost speaks its own name into the void.",
+    "source": "        OUTPUT = 'SNOBOL4'\nEND"
+  },
+  {
+    "id": "SP-02",
+    "name": "Count the Letters",
+    "description": "Measure the length of a sacred word.",
+    "source": "        WORD = 'SNOBOL'\n        OUTPUT = SIZE(WORD)\nEND"
+  },
+  {
+    "id": "SP-03",
+    "name": "The Repeating Whisper",
+    "description": "A chant repeated three times, as spirits do.",
+    "source": "        OUTPUT = DUPL('ECHO ', 3)\nEND"
+  },
+  {
+    "id": "SP-04",
+    "name": "Pattern Seeker",
+    "description": "Find the first vowel lurking in the word GHOST.",
+    "source": "        SUBJECT = 'GHOST'\n        SUBJECT ANY('AEIOU') . FOUND\n        OUTPUT = FOUND\nEND"
+  },
+  {
+    "id": "SP-05",
+    "name": "String Reversal Ritual",
+    "description": "Reverse a word, as the spirit world mirrors ours.",
+    "source": "        S = 'SNOBOL'\n        R = ''\nLOOP    S LEN(1) . C = '' :F(DONE)\n        R = C R :(LOOP)\nDONE    OUTPUT = R\nEND"
+  },
+  {
+    "id": "SP-06",
+    "name": "Arithmetic of the Ancients",
+    "description": "Sum the year of creation: 19 + 67 = the year SNOBOL4 was born.",
+    "source": "        A = 19\n        B = 67\n        OUTPUT = A + B\nEND"
+  },
+  {
+    "id": "SP-W1",
+    "name": "The Fibonacci Séance",
+    "description": "Summon the first eight numbers of the Fibonacci sequence.",
+    "source": "        A = 0\n        B = 1\n        COUNT = 0\nLOOP    OUTPUT = A\n        C = A + B\n        A = B\n        B = C\n        COUNT = COUNT + 1\n        LT(COUNT, 8) :S(LOOP)\nEND"
+  }
+]
