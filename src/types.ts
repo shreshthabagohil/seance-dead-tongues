@@ -11,11 +11,14 @@ export interface Note {
   text: string;         // extractive-answerer body
 }
 
+export type SpellLang = 'snobol' | 'forth';
+
 export interface Spell {
-  id: string;           // SP-01 … SP-W1
+  id: string;           // SP-01 … SP-W1 (snobol) / FP-01… (forth)
   name: string;         // display name
   description: string;  // one-line description
-  source: string;       // SNOBOL4 source code (must include END)
+  source: string;       // interpreter source (SNOBOL4 must include END)
+  lang: SpellLang;
 }
 
 export interface ScoredDoc {
@@ -47,6 +50,7 @@ export interface SpellRunResult {
   status: SpellRunStatus;
   output: string;
   err?: string;
+  truncated?: boolean;  // output hit the 4,000-char cap (VULN-007)
 }
 
 // Capability probe result
@@ -95,6 +99,7 @@ export interface AppState {
   conjureCount: number;   // total ghost answers
   acceptCount: number;    // ghost answered (not faded)
   rejectCount: number;    // ghost faded
+  liteMode: boolean;      // true: no model engine, answers are extractive-only
 }
 
 export type AppAction =
@@ -102,6 +107,7 @@ export type AppAction =
   | { type: 'LOAD_PROGRESS'; pct: number }
   | { type: 'ENGINE_READY' }
   | { type: 'ENGINE_ERROR'; msg: string }
+  | { type: 'FATAL_ERROR'; msg: string }
   | { type: 'USER_MSG'; text: string }
   | { type: 'GHOST_ANSWER'; msg: ChatMessage }
   | { type: 'GHOST_FADE'; reason: string }

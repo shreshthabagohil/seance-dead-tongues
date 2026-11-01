@@ -3,42 +3,84 @@
     "id": "SP-01",
     "name": "Echo the Dark",
     "description": "The ghost speaks its own name into the void.",
+    "lang": "snobol",
     "source": "        OUTPUT = 'SNOBOL4'\nEND"
   },
   {
     "id": "SP-02",
     "name": "Count the Letters",
     "description": "Measure the length of a sacred word.",
+    "lang": "snobol",
     "source": "        WORD = 'SNOBOL'\n        OUTPUT = SIZE(WORD)\nEND"
   },
   {
     "id": "SP-03",
     "name": "The Repeating Whisper",
     "description": "A chant repeated three times, as spirits do.",
+    "lang": "snobol",
     "source": "        OUTPUT = DUPL('ECHO ', 3)\nEND"
   },
   {
     "id": "SP-04",
     "name": "Pattern Seeker",
     "description": "Find the first vowel lurking in the word GHOST.",
+    "lang": "snobol",
     "source": "        SUBJECT = 'GHOST'\n        SUBJECT ANY('AEIOU') . FOUND\n        OUTPUT = FOUND\nEND"
   },
   {
     "id": "SP-05",
     "name": "String Reversal Ritual",
     "description": "Reverse a word, as the spirit world mirrors ours.",
+    "lang": "snobol",
     "source": "        S = 'SNOBOL'\n        R = ''\nLOOP    S LEN(1) . C = '' :F(DONE)\n        R = C R :(LOOP)\nDONE    OUTPUT = R\nEND"
   },
   {
     "id": "SP-06",
     "name": "Arithmetic of the Ancients",
     "description": "Sum the year of creation: 19 + 67 = the year SNOBOL4 was born.",
+    "lang": "snobol",
     "source": "        A = 19\n        B = 67\n        OUTPUT = A + B\nEND"
   },
   {
     "id": "SP-W1",
     "name": "The Fibonacci Séance",
     "description": "Summon the first eight numbers of the Fibonacci sequence.",
+    "lang": "snobol",
     "source": "        A = 0\n        B = 1\n        COUNT = 0\nLOOP    OUTPUT = A\n        C = A + B\n        A = B\n        B = C\n        COUNT = COUNT + 1\n        LT(COUNT, 8) :S(LOOP)\nEND"
+  },
+  {
+    "id": "FP-01",
+    "name": "Speak the Name",
+    "description": "A second tongue, the same word: the ghost names itself in Forth.",
+    "lang": "forth",
+    "source": ": GREET .\" SNOBOL4\" ;\nGREET"
+  },
+  {
+    "id": "FP-02",
+    "name": "Measure the Word",
+    "description": "Count the letters of a sacred word, stack-first.",
+    "lang": "forth",
+    "source": ": COUNT S\" SNOBOL\" . DROP ;\nCOUNT"
+  },
+  {
+    "id": "FP-03",
+    "name": "The Threefold Chant",
+    "description": "A chant repeated three times by a DO LOOP, not a string function.",
+    "lang": "forth",
+    "source": ": THRICE 3 0 DO .\" ECHO \" LOOP ;\nTHRICE"
+  },
+  {
+    "id": "FP-04",
+    "name": "The Overflow Specter",
+    "description": "Push a 32-bit integer past its limit and watch it wrap into darkness.",
+    "lang": "forth",
+    "source": "2147483647 1 + ."
+  },
+  {
+    "id": "FP-W1",
+    "name": "The Fibonacci Séance (Forth)",
+    "description": "The same eight numbers, summoned by a stack instead of variables.",
+    "lang": "forth",
+    "source": ": FIB 0 1 8 0 DO OVER . TUCK + LOOP 2DROP ;\nFIB"
   }
 ]

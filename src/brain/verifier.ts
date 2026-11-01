@@ -104,13 +104,15 @@ export interface VerifyResult {
  * Verify a ghost answer. Returns { ok: true } or { ok: false, reason }.
  *
  * @param text         the raw answer text from the LLM
- * @param question     the original user question (for carry-through)
+ * @param _question    the original user question — kept in the signature for
+ *                      API stability but NOT used as a vocabulary allowlist
+ *                      (VULN-001: that let attacker-typed words through)
  * @param corpusVocab  stems of all notes (allows domain terms)
  * @param noteTexts    array of note text strings used for this answer
  */
 export function verify(
   text: string,
-  question: string,
+  _question: string,
   corpusVocab: Set<string>,
   noteTexts: string[] = []
 ): VerifyResult {
@@ -140,23 +142,19 @@ export function verify(
     }
   }
 
-  // 4. Novel numbers/years not in corpus
+  // 4. Novel numbers/years not in corpus.
+  // VULN-001: do NOT exempt numbers just because the attacker typed them in
+  // the question — that makes any typed number legal output. A number is
+  // only allowed if it is already in corpusVocab (checked by novelNumbers).
   const novelNums = novelNumbers(text, corpusVocab);
   if (novelNums.length > 0) {
-    // Allow numbers that appear in the question
-    const questionNums = (question.match(/\b\d+\b/g) ?? []) as string[];
-    const truly = novelNums.filter((n) => !questionNums.includes(n));
-    if (truly.length > 0) {
-      return { ok: false, reason: `novel number: ${truly[0]}` };
-    }
+    return { ok: false, reason: `novel number: ${novelNums[0]}` };
   }
 
   // 5. Novel proper nouns
-  // Build allowed set: corpus + ghost lexicon + question proper nouns
-  const questionProper = question.split(/\s+/).filter((w) => {
-    return w.length > 1 && isUpperCase(w[0]) && !STOP.has(w.toLowerCase());
-  }).map((w) => w.toLowerCase());
-
+  // Build allowed set: corpus + ghost lexicon + note text.
+  // VULN-001: do NOT allow-list every capitalised word the attacker typed in
+  // the question — only words already in corpusVocab/noteVocab are allowed.
   const noteVocab = new Set<string>();
   for (const nt of noteTexts) {
     for (const t of rawTokens(nt)) noteVocab.add(t.toLowerCase());
@@ -190,9 +188,6 @@ export function verify(
       // Allow if in note texts
       if (noteVocab.has(wl)) continue;
 
-      // Allow if in question proper nouns
-      if (questionProper.includes(wl)) continue;
-
       // It's novel
       novelProperCount++;
       if (novelProperCount > 0) {
@@ -202,14 +197,14 @@ export function verify(
   }
 
   // 6. Novelty ratio > 0.25
+  // VULN-001: a question term only counts as "allowed" if it is also in
+  // corpusVocab — an arbitrary attacker-typed word must still count as novel.
   const answerToks = rawTokens(lower);
   if (answerToks.length > 0) {
     let novelCount = 0;
     for (const t of answerToks) {
       if (!corpusVocab.has(t) && !corpusVocab.has(stem(t)) && !GHOST_LEXICON.has(t) && !STOP.has(t)) {
-        // Also allow question terms
-        const questionToks = new Set(rawTokens(question.toLowerCase()));
-        if (!questionToks.has(t)) novelCount++;
+        novelCount++;
       }
     }
     const noveltyRatio = novelCount / answerToks.length;

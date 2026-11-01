@@ -65,6 +65,21 @@ export function buildExtractiveContext(
   return ctx;
 }
 
+/**
+ * Build a displayable ghost answer directly from the notes, with no model
+ * call — used for AMBIG routes and Lite mode (no WebGPU / engine
+ * unavailable), and as the fallback when the Verifier rejects the model's
+ * output. This is always 100% grounded: it's note text, verbatim.
+ */
+export function extractiveAnswer(
+  notes: Note[],
+  secondScore?: number,
+  topScore?: number
+): string {
+  const context = buildExtractiveContext(notes, secondScore, topScore);
+  return `${nextLeadIn()}${context}`;
+}
+
 // ── Prompt builder ────────────────────────────────────────────────────────
 
 /**
@@ -97,15 +112,26 @@ import type { MLCEngine } from '@mlc-ai/web-llm';
 /**
  * Generate a ghost response using the WebLLM engine.
  *
- * @param engine   initialized MLCEngine
- * @param prompt   built prompt string
- * @returns        raw LLM output string
+ * temperature 0.3 / max_tokens 100 per SECURITY.md §8.1 — this is the
+ * setting the project's own DEVPOST writeup measured and recommended
+ * ("At 0.7, it starts inventing... 0.3 gets the right balance").
+ *
+ * @param engine       initialized MLCEngine
+ * @param prompt       built prompt string
+ * @param temperature  sampling temperature (default 0.3)
+ * @param maxTokens    max tokens to generate (default 100)
+ * @returns            raw LLM output string
  */
-export async function generateResponse(engine: MLCEngine, prompt: string): Promise<string> {
+export async function generateResponse(
+  engine: MLCEngine,
+  prompt: string,
+  temperature = 0.3,
+  maxTokens = 100
+): Promise<string> {
   const response = await engine.chat.completions.create({
     messages: [{ role: 'user', content: prompt }],
-    temperature: 0.7,
-    max_tokens: 120,
+    temperature,
+    max_tokens: maxTokens,
     top_p: 0.9,
   });
 

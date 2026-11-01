@@ -17,6 +17,7 @@
 
 import { createSession } from 'snoflake';
 import type { SpellRunResult } from '../types';
+import { makeCappedAppender } from './outputCap';
 
 // ── Message protocol ──────────────────────────────────────────────────────
 // Incoming: { id: string; spellId: string; source: string }
@@ -52,17 +53,22 @@ self.onmessage = (evt: MessageEvent<WorkerRequest>) => {
     return;
   }
 
-  let output = '';
+  const appender = makeCappedAppender(4000); // VULN-007 output cap
 
   try {
     const s = createSession({
       source,
       stlimit: 1_000_000, // browser limit (NOT 3_000_000 from Node spike)
-      onOutput: (line: string) => { output += line + '\n'; },
-      onError: (line: string) => { output += line + '\n'; },
+      onOutput: (line: string) => { appender.append(line + '\n'); },
+      onError: (line: string) => { appender.append(line + '\n'); },
       onDone: () => {
-        const status = classifyOutput(output);
-        const result: SpellRunResult = { spellId, status, output: output.trim() };
+        const status = appender.truncated ? 'limit' : classifyOutput(appender.value);
+        const result: SpellRunResult = {
+          spellId,
+          status,
+          output: appender.value.trim(),
+          truncated: appender.truncated,
+        };
         self.postMessage({ id, result });
         // NOTE: We intentionally do NOT call s.end() here.
         // The outer caller (runner.ts) sets a wall-clock timer and calls
@@ -75,7 +81,7 @@ self.onmessage = (evt: MessageEvent<WorkerRequest>) => {
     const result: SpellRunResult = {
       spellId,
       status: 'error',
-      output,
+      output: appender.value,
       err: String(err),
     };
     self.postMessage({ id, result });

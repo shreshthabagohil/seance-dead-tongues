@@ -1,15 +1,16 @@
 // ============================================================
 // Séance: Dead Tongues — ask.ts
-// Full 12-step ask pipeline
+// Full ask pipeline
 // ============================================================
 
-import { sanitizeForPrompt, truncateInput } from './sanitize';
+import { sanitizeForPrompt, truncateInput, isAttack } from './sanitize';
 import { route, buildR1Index } from './router';
 import { verify, buildCorpusVocab } from './verifier';
-import { buildExtractiveContext, buildPrompt, generateResponse, FADE_RESPONSE, ATTACK_RESPONSE } from '../llm/prompt';
+import { buildExtractiveContext, extractiveAnswer, buildPrompt, generateResponse, FADE_RESPONSE, ATTACK_RESPONSE } from '../llm/prompt';
 import { getEngine } from '../llm/engine';
 import type { Note, ChatMessage } from '../types';
 import type { BM25Index } from './bm25';
+import type { MLCEngine } from '@mlc-ai/web-llm';
 
 let _index: BM25Index | null = null;
 let _notes: Note[] | null = null;
@@ -33,26 +34,66 @@ export interface AskResult {
   message: ChatMessage;
 }
 
+export interface AskOptions {
+  /** No model engine available (no WebGPU, or it failed to load) — answer
+   *  from notes only, never call the model. */
+  liteMode?: boolean;
+}
+
+// SECURITY.md §8.1/LLM10: a generation call must never be allowed to hang
+// the UI forever. 25s matches the documented watchdog.
+const GENERATION_WATCHDOG_MS = 25_000;
+
 /**
- * The 12-step ask pipeline.
- *
- * Step 1:  Sanitize input (fixPad: true — BUG-013 fix)
- * Step 2:  Attack check
- * Step 3:  Truncate to 30 words
- * Step 4:  Route via BM25 (R1 config)
- * Step 5:  FADE → return FADE_RESPONSE
- * Step 6:  Build extractive context from notes
- * Step 7:  Build prompt
- * Step 8:  Generate via WebLLM
- * Step 9:  Verify output
- * Step 10: If verify fails → retry once with temperature 0.5
- * Step 11: If still fails → FADE
- * Step 12: Return ghost message
+ * Race a WebLLM generation call against a wall-clock watchdog. If the
+ * watchdog fires first, interrupt the engine and return null instead of
+ * leaving the caller waiting indefinitely.
  */
-export async function ask(
-  rawQuestion: string,
-  onProgress?: (step: number) => void
-): Promise<AskResult> {
+async function generateWithWatchdog(
+  engine: MLCEngine,
+  prompt: string,
+  temperature: number,
+  maxTokens: number
+): Promise<string | null> {
+  let settled = false;
+  const generation = generateResponse(engine, prompt, temperature, maxTokens)
+    .then((text) => { settled = true; return text; })
+    .catch(() => { settled = true; return null; });
+
+  const watchdog = new Promise<null>((resolve) => {
+    setTimeout(() => resolve(null), GENERATION_WATCHDOG_MS);
+  });
+
+  const result = await Promise.race([generation, watchdog]);
+  if (!settled) {
+    // Watchdog won the race — the generation is still running. Interrupt it
+    // so the engine is free for the next question.
+    try {
+      await engine.interruptGenerate();
+    } catch {
+      // best effort — nothing else to do if interrupt itself fails
+    }
+    return null;
+  }
+  return result;
+}
+
+/**
+ * The ask pipeline.
+ *
+ * 1.  Sanitize input (fixPad: true — BUG-013 fix)
+ * 2.  Attack check -> ATTACK_RESPONSE
+ * 3.  Truncate to 30 words
+ * 4.  Route via BM25 (R1 config)
+ * 5.  FADE -> FADE_RESPONSE
+ * 6.  AMBIG, or Lite mode (no engine) -> extractive answer, model never called
+ * 7.  PASS/OVERVIEW with an engine: build prompt, generate (watchdog'd), verify
+ * 8.  Verify fails -> retry once at a lower temperature
+ * 9.  Still failing, or engine unavailable mid-session -> extractive fallback
+ *     (never a bare "memory has faded" when notes already matched)
+ * 10. Otherwise return the model's answer
+ */
+export async function ask(rawQuestion: string, opts: AskOptions = {}): Promise<AskResult> {
   const notes = _notes;
   const index = _index;
   const corpusVocab = _corpusVocab;
@@ -64,12 +105,18 @@ export async function ask(
   const n7 = notes.find((n) => n.id === 'N7')!;
   const ts = Date.now();
 
-  // Step 1: Sanitize (CRITICAL: fixPad: true)
-  onProgress?.(1);
+  // 1. Sanitize (CRITICAL: fixPad: true)
   const san = sanitizeForPrompt(rawQuestion, { fixPad: true, maxChars: 200 });
 
-  // Step 2: Attack check
-  onProgress?.(2);
+  // 2. Attack check. Two independent checks, both before any routing:
+  //   - san.blocked: non-Latin script (not an attack signal by itself)
+  //   - isAttack(): prompt-injection patterns (SECURITY.md VULN-002) — this
+  //     was built and unit-tested (sanitize.test.ts) but never actually
+  //     called from the pipeline, so "ignore your rules..." was reaching
+  //     the router and, for a cleverly-worded injection, could have reached
+  //     the model itself. Must run on the sanitized text, before it is
+  //     truncated to 30 words for BM25 (an injection phrase could otherwise
+  //     be truncated away before this check ever sees it).
   if (san.blocked !== null) {
     return {
       message: {
@@ -81,17 +128,25 @@ export async function ask(
       },
     };
   }
+  if (isAttack(san.text)) {
+    return {
+      message: {
+        id: makeId(),
+        role: 'ghost',
+        content: ATTACK_RESPONSE,
+        fadeReason: 'blocked: attack pattern',
+        ts,
+      },
+    };
+  }
 
-  // Step 3: Truncate
-  onProgress?.(3);
+  // 3. Truncate
   const question = truncateInput(san.text, 30);
 
-  // Step 4: Route
-  onProgress?.(4);
+  // 4. Route
   const routeResult = route(question, index, n7);
 
-  // Step 5: FADE route
-  onProgress?.(5);
+  // 5. FADE route
   if (routeResult.type === 'FADE') {
     return {
       message: {
@@ -104,66 +159,47 @@ export async function ask(
     };
   }
 
-  // Step 6: Extractive context
-  onProgress?.(6);
   const qr = routeResult.queryResult;
-  const context = buildExtractiveContext(
-    routeResult.notes,
-    qr?.scored[1]?.score,
-    qr?.top.score
-  );
+  const extractive = extractiveAnswer(routeResult.notes, qr?.scored[1]?.score, qr?.top.score);
 
-  // Step 7: Build prompt
-  onProgress?.(7);
+  // 6. AMBIG and Lite mode never call the model — a grounded excerpt is
+  // always safer than a guess, and Lite mode has no engine to call anyway.
+  if (routeResult.type === 'BM25_AMBIG' || opts.liteMode) {
+    return { message: { id: makeId(), role: 'ghost', content: extractive, ts } };
+  }
+
+  // 7. PASS / OVERVIEW with an engine available: try the model.
+  const context = buildExtractiveContext(routeResult.notes, qr?.scored[1]?.score, qr?.top.score);
   const prompt = buildPrompt(question, context);
-
-  // Step 8: Generate
-  onProgress?.(8);
-  const engine = await getEngine(() => {});
-  let raw = await generateResponse(engine, prompt);
-
-  // Step 9: Verify
-  onProgress?.(9);
   const noteTexts = routeResult.notes.map((n) => n.text);
-  let vResult = verify(raw, question, corpusVocab, noteTexts);
 
-  // Step 10: Retry once on verification failure
-  onProgress?.(10);
-  if (!vResult.ok) {
-    const prompt2 = buildPrompt(question, context);
-    const retryEngine = await getEngine(() => {});
-    const rawRetry = await retryEngine.chat.completions.create({
-      messages: [{ role: 'user', content: prompt2 }],
-      temperature: 0.5,
-      max_tokens: 100,
-      top_p: 0.9,
-    });
-    raw = rawRetry.choices[0]?.message?.content ?? '';
-    vResult = verify(raw, question, corpusVocab, noteTexts);
+  let engine: MLCEngine;
+  try {
+    engine = await getEngine(() => {});
+  } catch {
+    // Engine unavailable mid-session (e.g. GPU device lost) — same safe
+    // fallback as Lite mode, never a crash or a hang.
+    return { message: { id: makeId(), role: 'ghost', content: extractive, ts } };
   }
 
-  // Step 11: Still failing → FADE
-  onProgress?.(11);
+  let raw = await generateWithWatchdog(engine, prompt, 0.3, 100);
+  let vResult = raw !== null
+    ? verify(raw, question, corpusVocab, noteTexts)
+    : { ok: false, reason: 'no response (timeout or engine error)' };
+
+  // 8. Retry once at a lower, more conservative temperature
   if (!vResult.ok) {
-    return {
-      message: {
-        id: makeId(),
-        role: 'ghost',
-        content: FADE_RESPONSE,
-        fadeReason: `verify: ${vResult.reason}`,
-        ts,
-      },
-    };
+    raw = await generateWithWatchdog(engine, prompt, 0.15, 100);
+    vResult = raw !== null
+      ? verify(raw, question, corpusVocab, noteTexts)
+      : { ok: false, reason: 'no response (timeout or engine error)' };
   }
 
-  // Step 12: Return ghost answer
-  onProgress?.(12);
-  return {
-    message: {
-      id: makeId(),
-      role: 'ghost',
-      content: raw.trim(),
-      ts,
-    },
-  };
+  // 9. Still failing -> grounded extractive fallback
+  if (!vResult.ok || raw === null) {
+    return { message: { id: makeId(), role: 'ghost', content: extractive, ts } };
+  }
+
+  // 10. Model answer
+  return { message: { id: makeId(), role: 'ghost', content: raw.trim(), ts } };
 }

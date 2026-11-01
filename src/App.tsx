@@ -28,13 +28,16 @@ const INITIAL_STATE: AppState = {
   conjureCount: 0,
   acceptCount: 0,
   rejectCount: 0,
+  liteMode: false,
 };
 
 function appReducer(state: AppState, action: AppAction): AppState {
   switch (action.type) {
     case 'PROBE_DONE':
       if (action.cap.blocked) {
-        return { ...state, status: 'incompatible', loadPhase: 'idle' };
+        // Lite mode: no WebGPU/shader-f16, but the chat still works —
+        // answers come straight from the notes, no model, no download.
+        return { ...state, status: 'ready', liteMode: true, loadPhase: 'idle' };
       }
       return { ...state, status: 'loading', loadPhase: 'downloading' };
 
@@ -42,9 +45,18 @@ function appReducer(state: AppState, action: AppAction): AppState {
       return { ...state, loadProgress: action.pct };
 
     case 'ENGINE_READY':
-      return { ...state, status: 'ready', loadPhase: 'ready', loadProgress: 100 };
+      return { ...state, status: 'ready', liteMode: false, loadPhase: 'ready', loadProgress: 100 };
 
     case 'ENGINE_ERROR':
+      // The engine failed after the capability probe passed (GPU device
+      // lost, model host unreachable, etc.) — fall back to Lite mode
+      // instead of a permanent dead end (SECURITY.md runbook C).
+      return { ...state, status: 'ready', liteMode: true, error: action.msg, loadPhase: 'idle' };
+
+    case 'FATAL_ERROR':
+      // Something failed before the capability probe even ran (e.g.
+      // notes.json itself didn't load) — there's no data to answer from,
+      // so Lite mode can't help either. This is the one truly dead end.
       return { ...state, status: 'incompatible', error: action.msg, loadPhase: 'idle' };
 
     case 'USER_MSG': {
@@ -118,22 +130,29 @@ export default function App() {
   // Load data + probe capabilities + init engine on mount
   useEffect(() => {
     async function init() {
-      // Load notes and spells
-      const [notesRes, spellsRes] = await Promise.all([
-        fetch('/data/notes.json'),
-        fetch('/data/spells.json'),
-      ]);
-      const notes = await notesRes.json();
-      const spellData: Spell[] = await spellsRes.json();
-      setSpells(spellData);
-      initPipeline(notes);
+      // Load notes and spells. If this fails there is no data to answer
+      // from at all — Lite mode needs the notes just as much as full mode.
+      let notes;
+      try {
+        const [notesRes, spellsRes] = await Promise.all([
+          fetch('/data/notes.json'),
+          fetch('/data/spells.json'),
+        ]);
+        notes = await notesRes.json();
+        const spellData: Spell[] = await spellsRes.json();
+        setSpells(spellData);
+        initPipeline(notes);
+      } catch (err) {
+        dispatch({ type: 'FATAL_ERROR', msg: String(err) });
+        return;
+      }
 
       // Capability probe
       const cap = await probeCapabilities();
       setCapResult(cap);
       dispatch({ type: 'PROBE_DONE', cap });
 
-      if (cap.blocked) return; // can't load engine
+      if (cap.blocked) return; // Lite mode — no engine to load
 
       // Load WebLLM engine
       try {
@@ -145,7 +164,7 @@ export default function App() {
     }
 
     init().catch((err) => {
-      dispatch({ type: 'ENGINE_ERROR', msg: String(err) });
+      dispatch({ type: 'FATAL_ERROR', msg: String(err) });
     });
   }, []);
 
@@ -157,12 +176,12 @@ export default function App() {
     dispatch({ type: 'USER_MSG', text });
 
     try {
-      const result = await ask(text);
+      const result = await ask(text, { liteMode: state.liteMode });
       dispatch({ type: 'GHOST_ANSWER', msg: result.message });
     } catch (err) {
       dispatch({ type: 'GHOST_FADE', reason: String(err) });
     }
-  }, [inputText, state.status]);
+  }, [inputText, state.status, state.liteMode]);
 
   // Handle spell result from SpellPanel
   const handleSpellResult = useCallback(
@@ -214,8 +233,12 @@ export default function App() {
       </header>
 
       <main className="app-main">
-        {isIncompatible && capResult && (
-          <CapabilityBanner cap={capResult} />
+        {isIncompatible && (
+          <CapabilityBanner reason={state.error ?? 'Something went wrong loading the séance.'} fatal />
+        )}
+
+        {!isIncompatible && state.liteMode && (
+          <CapabilityBanner reason={capResult?.blocked ?? state.error ?? 'The model could not be loaded'} />
         )}
 
         {isLoading && (

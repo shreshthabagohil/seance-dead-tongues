@@ -8,9 +8,9 @@
 
 **Séance: Dead Tongues** is a static web app that lets you hold a séance with the ghost of SNOBOL4 — a text-processing programming language from 1962 that time largely forgot.
 
-Ask the ghost a question about its history, its creators (Griswold, Farber, Polonsky), its pattern-matching model, its influence. It answers in a short, eerie voice. It can also **cast spells** — verified SNOBOL4 programs that actually execute live in your browser via a WebAssembly runtime.
+Ask the ghost a question about its history, its creators (Griswold, Farber, Polonsky), its pattern-matching model, its influence. It answers in a short, eerie voice. It can also **cast spells** — verified SNOBOL4 or Forth programs that actually execute live in your browser via a WebAssembly runtime.
 
-Everything runs in your browser. Nothing is sent to a server. After one ~0.7 GB model download, it works in airplane mode.
+What you type never leaves this tab. Downloading the model contacts Hugging Face and GitHub, which can see your IP address. This app has no server, accounts, cookies or analytics. After one ~0.7 GB model download, it works in airplane mode.
 
 **The punchline:** Gemma 3 1B writes valid SNOBOL4 programs zero times out of six in zero-shot tests. So instead of asking the model to write code, I turned that failure into the design: *code decides what is true, the model only gives it a voice.*
 
@@ -43,7 +43,8 @@ Everything runs in your browser. Nothing is sent to a server. After one ~0.7 GB 
 **Stack:**
 - TypeScript + Vite + React 18
 - [WebLLM 0.2.86](https://github.com/mlc-ai/web-llm) — runs Gemma 3 1B in-browser over WebGPU
-- In-house BM25 retrieval + custom stemmer (107 unit tests, all green in CI)
+- In-house BM25 retrieval + custom stemmer (115 unit tests, all green in CI)
+- [WAForth 0.20.1](https://github.com/remko/waforth) (MIT) — a second dead tongue, Forth, also compiled to WASM
 - [snoflake](https://github.com/rumblesan/snoflake) (BSD-2) — SNOBOL4 interpreter compiled to WASM
 - `vite-plugin-pwa` (Workbox) for offline app shell
 - GitHub Actions → GitHub Pages (fully free, no card details entered anywhere)
@@ -110,8 +111,8 @@ ghost answer shown (or extractive fallback if Verifier rejects)
 | Verifier accept rate (model answers shown / grounded answers) | `[TBD — browser eval]` % |
 | Median time-to-first-token | `[TBD]` s (M-series MacBook Air, Chrome) |
 | Throughput | `[TBD]` tok/s |
-| Unit tests (BM25, stemmer, gate, verifier, router) | **107 / 107** ✅ |
-| Verified spells in build | **7 / 7** ✅ |
+| Unit tests (BM25, stemmer, gate, verifier, router) | **115 / 115** ✅ |
+| Verified spells in build | **12 / 12** (7 SNOBOL4 + 5 Forth) ✅ |
 
 *Note: The 2 false-accepts in attack questions are prompt-injection strings that the sanitizer blocks in production before reaching the router — they are a harness artifact, not a production gap.*
 

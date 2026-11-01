@@ -7,28 +7,32 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "vitest run",
+    "typecheck": "tsc -b --noEmit",
+    "verify-spells": "tsx scripts/verify-spells.ts"
   },
   "dependencies": {
-    "@mlc-ai/web-llm": "^0.2.86",
-    "react": "^19.3.1",
-    "react-dom": "^19.3.1",
-    "snoflake": "^1.1.9"
+    "@mlc-ai/web-llm": "0.2.86",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "snoflake": "1.1.9",
+    "waforth": "0.20.1"
   },
   "devDependencies": {
-    "@playwright/test": "^1.64.1",
-    "@types/node": "^24.19.2",
-    "@types/react": "^19.3.0",
-    "@types/react-dom": "^19.3.0",
-    "@vitejs/plugin-react": "^6.1.2",
-    "@vitest/coverage-v8": "^5.0.5",
-    "eslint-plugin-no-unsanitized": "^4.1.5",
-    "oxlint": "^1.89.0",
-    "tsx": "^4.23.15",
-    "typescript": "~7.0.2",
-    "vite": "^8.3.5",
-    "vite-plugin-pwa": "^2.0.0",
-    "vitest": "^5.0.5",
-    "workbox-window": "^7.4.1"
+    "@playwright/test": "1.64.1",
+    "@types/node": "24.19.2",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@vitejs/plugin-react": "6.1.2",
+    "@vitest/coverage-v8": "5.0.5",
+    "eslint-plugin-no-unsanitized": "4.1.5",
+    "oxlint": "1.90.0",
+    "tsx": "4.23.15",
+    "typescript": "7.0.2",
+    "vite": "8.3.5",
+    "vite-plugin-pwa": "2.0.0",
+    "vitest": "5.0.5",
+    "workbox-window": "7.4.1"
   }
 }

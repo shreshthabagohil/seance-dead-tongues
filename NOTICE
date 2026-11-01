@@ -1,0 +1,16 @@
+Séance: Dead Tongues — Third-Party Notices
+
+This app runs Gemma 3 1B IT (q4f16_1) entirely in your browser via WebLLM.
+
+Gemma is provided under and subject to the Gemma Terms of Use found at
+https://ai.google.dev/gemma/terms
+
+Use of Gemma is also subject to Google's Gemma Prohibited Use Policy:
+https://ai.google.dev/gemma/prohibited_use_policy
+
+This app does not modify, fine-tune, or redistribute Gemma's weights. Weights
+are fetched directly from Hugging Face by the user's own browser at first
+use; this project does not host or re-serve them.
+
+See CREDITS.md for the licenses of the open-source software this app
+depends on (WebLLM, snoflake, React, and others).

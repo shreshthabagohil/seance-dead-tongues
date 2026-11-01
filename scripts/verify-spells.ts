@@ -1,87 +1,46 @@
 /**
  * verify-spells.ts
- * CI script: lint all spells and run them through snoflake to verify output.
+ * CI script: lint all spells and run them through the real interpreter,
+ * each in its OWN child process with a hard wall-clock timeout.
+ *
+ * Why a child process per spell (BUG-014, TESTING.md): snoflake's session
+ * busy-loops forever on a source with no END, which blocks the Node event
+ * loop — an in-process JS setTimeout can never fire against that, so it is
+ * not a real guard. A spawned child process can be killed from outside its
+ * own event loop. The same isolation also protects against a WAForth
+ * memory leak observed empirically: creating many WAForth instances in one
+ * JS process accumulates WASM memory until the process OOMs; one spell per
+ * process means that memory is reclaimed by the OS when each one exits.
+ *
  * Run: npx tsx scripts/verify-spells.ts
  */
-
 import { readFileSync } from 'fs';
-import { createSession } from 'snoflake';
+import { spawnSync } from 'child_process';
 import type { Spell } from '../src/types';
 
 const SPELLS_PATH = new URL('../public/data/spells.json', import.meta.url).pathname;
+const RUNNER_PATH = new URL('./run-one-spell.mjs', import.meta.url).pathname;
+const TIMEOUT_MS = 8000;
 
-// Linting rules
-const FORBIDDEN_BUILTINS = ['CODE', 'EVAL', 'APPLY', 'OPSYN', 'LOAD', 'UNLOAD', 'HOST', 'EXIT', 'SETEXIT'];
-
-function lintSpell(spell: Spell): string[] {
-  const errors: string[] = [];
-  const src = spell.source;
-
-  // Must have END statement
-  if (!/^END(\s|$)/m.test(src)) {
-    errors.push('Missing END statement — snoflake will hang without it');
-  }
-
-  // Forbidden builtins
-  for (const b of FORBIDDEN_BUILTINS) {
-    if (new RegExp(`\\b${b}\\s*\\(`, 'i').test(src)) {
-      errors.push(`Forbidden builtin: ${b}`);
-    }
-  }
-
-  // INPUT( and OUTPUT( with parens (parametrised form)
-  if (/INPUT\s*\(/i.test(src)) errors.push('Forbidden: INPUT( (parametrised form)');
-  // OUTPUT( is allowed as assignment target but not as a function call with argument
-  // Simple heuristic: OUTPUT(...) where there's content inside
-  if (/OUTPUT\s*\([^)]+\)/i.test(src)) errors.push('Forbidden: OUTPUT( (function-call form)');
-
-  // Dollar-sign indirection — unsafe
-  if (/\$/.test(src)) errors.push('Forbidden: $ (indirect reference)');
-
-  // DUPL argument must be literal <= 1000
-  const duplMatch = src.match(/DUPL\s*\(\s*[^,]+,\s*(\d+)\s*\)/gi);
-  if (duplMatch) {
-    for (const m of duplMatch) {
-      const numMatch = m.match(/,\s*(\d+)\s*\)/);
-      if (numMatch && parseInt(numMatch[1], 10) > 1000) {
-        errors.push(`DUPL repetition count ${numMatch[1]} exceeds 1000`);
-      }
-    }
-  }
-
-  return errors;
-}
-
-async function runSpell(spell: Spell): Promise<{ output: string; status: 'ok' | 'error' | 'limit' | 'timeout' }> {
-  return new Promise((resolve) => {
-    let output = '';
-    const timer = setTimeout(() => {
-      resolve({ output, status: 'timeout' });
-    }, 8000);
-
-    try {
-      const s = createSession({
-        source: spell.source,
-        stlimit: 1_000_000,
-        onOutput: (line: string) => { output += line + '\n'; },
-        onError: (line: string) => { output += line + '\n'; },
-        onDone: () => {
-          clearTimeout(timer);
-          if (/^LIMIT ON STATEMENT EXECUTION EXCEEDED$/m.test(output)) {
-            resolve({ output, status: 'limit' });
-          } else if (/^(ERROR\s+\d+ IN STATEMENT|ERRORS DETECTED IN SOURCE PROGRAM)/m.test(output)) {
-            resolve({ output, status: 'error' });
-          } else {
-            resolve({ output, status: 'ok' });
-          }
-        },
-      });
-      s.start();
-    } catch (err) {
-      clearTimeout(timer);
-      resolve({ output: String(err), status: 'error' });
-    }
+function runOne(id: string): { status: string; output: string; err?: string } {
+  const res = spawnSync(process.execPath, [RUNNER_PATH, id], {
+    timeout: TIMEOUT_MS,
+    encoding: 'utf-8',
   });
+
+  if (res.error && (res.error as NodeJS.ErrnoException).code === 'ETIMEDOUT') {
+    return { status: 'timeout', output: '', err: `Timed out after ${TIMEOUT_MS}ms` };
+  }
+  if (res.signal) {
+    return { status: 'timeout', output: '', err: `Killed by signal ${res.signal} (likely hung)` };
+  }
+
+  const line = (res.stdout ?? '').trim().split('\n').pop() ?? '';
+  try {
+    return JSON.parse(line);
+  } catch {
+    return { status: 'error', output: '', err: `Child process produced no parseable result: ${res.stderr || line}` };
+  }
 }
 
 async function main() {
@@ -91,24 +50,15 @@ async function main() {
   console.log(`\nVerifying ${spells.length} spells...\n`);
 
   for (const spell of spells) {
-    process.stdout.write(`  [${spell.id}] ${spell.name} ... `);
+    process.stdout.write(`  [${spell.id}:${spell.lang}] ${spell.name} ... `);
+    const result = runOne(spell.id);
 
-    // Lint
-    const lintErrors = lintSpell(spell);
-    if (lintErrors.length > 0) {
-      console.log('LINT FAIL');
-      for (const e of lintErrors) console.log(`    ✗ ${e}`);
-      anyFail = true;
-      continue;
-    }
-
-    // Run
-    const result = await runSpell(spell);
     if (result.status === 'ok') {
       console.log(`OK  →  ${result.output.trim().split('\n').join(' | ')}`);
     } else {
       console.log(`FAIL (${result.status})`);
-      console.log(`    Output: ${result.output.trim().slice(0, 200)}`);
+      if (result.err) console.log(`    ${result.err}`);
+      if (result.output) console.log(`    Output: ${result.output.trim().slice(0, 200)}`);
       anyFail = true;
     }
   }

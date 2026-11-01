@@ -291,6 +291,11 @@ body {
   color: #f88;
 }
 .capability-banner p { margin-top: 6px; font-size: 0.9rem; }
+.capability-banner--lite {
+  background: var(--surface2);
+  border-color: var(--accent);
+  color: var(--text);
+}
 
 /* ── Progress bar ── */
 .progress-wrap {
@@ -339,6 +344,23 @@ body {
   font-size: 0.8rem;
   color: var(--text-dim);
   margin-bottom: 12px;
+}
+
+.spell-lang-picker { display: flex; gap: 6px; margin-bottom: 12px; }
+.spell-lang-btn {
+  flex: 1;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 6px 8px;
+  color: var(--text-dim);
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+}
+.spell-lang-btn--active {
+  border-color: var(--accent);
+  color: var(--accent);
 }
 
 .spell-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
