@@ -135,8 +135,8 @@ export default function App() {
       let notes;
       try {
         const [notesRes, spellsRes] = await Promise.all([
-          fetch('/data/notes.json'),
-          fetch('/data/spells.json'),
+          fetch(`${import.meta.env.BASE_URL}data/notes.json`),
+          fetch(`${import.meta.env.BASE_URL}data/spells.json`),
         ]);
         notes = await notesRes.json();
         const spellData: Spell[] = await spellsRes.json();
