@@ -291,7 +291,7 @@ export default function App() {
       <footer className="app-footer">
         <p>
           Offline • WebGPU • Gemma 3 1B •{' '}
-          <a href="https://github.com/shreshthabagohil/dead-tongues" target="_blank" rel="noopener noreferrer">
+          <a href="https://github.com/shreshthabagohil/seance-dead-tongues" target="_blank" rel="noopener noreferrer">
             GitHub
           </a>{' '}
           •{' '}
