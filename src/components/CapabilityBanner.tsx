@@ -1,28 +1,19 @@
 interface Props {
-  /** Why we're showing this banner (capability probe reason, or an error). */
   reason: string;
-  /** true: the whole app is broken (no notes data). false: Lite mode — chat still works. */
   fatal?: boolean;
 }
 
-export function CapabilityBanner({ reason, fatal = false }: Props) {
-  if (fatal) {
-    return (
-      <div className="capability-banner capability-banner--fatal" role="alert" aria-live="assertive">
-        <strong>⚠ Séance cannot begin</strong>
-        <p>{reason}</p>
-      </div>
-    );
-  }
-
+export function CapabilityBanner({ reason, fatal }: Props) {
   return (
-    <div className="capability-banner capability-banner--lite" role="status" aria-live="polite">
-      <strong>🕯 Lite mode</strong>
-      <p>
-        {reason}. Answering from the notes directly — same facts, no ~711 MB
-        model download. Try Chrome 113+ or Edge 113+ on a WebGPU-capable
-        device for the full in-character ghost.
-      </p>
+    <div className="capability-banner" role="alert" aria-live="assertive">
+      <strong>{fatal ? '⚠ Séance cannot begin' : '⚠ Running in Lite Mode'}</strong>
+      <p>{reason}</p>
+      {fatal && (
+        <p>
+          WebGPU with shader-f16 support is required for the full experience.
+          Try Chrome 113+ or Edge 113+ on a compatible GPU.
+        </p>
+      )}
     </div>
   );
 }
