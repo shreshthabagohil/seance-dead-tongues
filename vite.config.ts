@@ -12,6 +12,7 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
+      registerType: 'autoUpdate',
       registerType: 'prompt',   // user must approve SW update — no silent auto-reload
       injectRegister: 'auto',
 
