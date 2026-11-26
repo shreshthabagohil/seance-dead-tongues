@@ -56,6 +56,42 @@
   --fade-bg: #1a1a1f;
 }
 
+/* Consent gate (Bug 3) */
+.consent-gate {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.consent-gate__info {
+  font-size: 0.85rem;
+  opacity: 0.75;
+  text-align: center;
+  margin: 0;
+}
+
+.summon-btn {
+  padding: 0.6rem 1.5rem;
+  background: #7c3aed;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+
+.summon-btn:hover {
+  background: #6d28d9;
+}
+
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
