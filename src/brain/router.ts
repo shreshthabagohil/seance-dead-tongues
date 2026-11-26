@@ -43,29 +43,26 @@ function isSmalltalk(raw: string): boolean {
 }
 
 export function route(
-    if (isSmalltalk(rawQuery)) {
-    return { type: 'SMALLTALK', notes: [] };
-  }
   rawQuery: string,
   index: BM25Index,
   n7: Note
 ): Route {
+  if (isSmalltalk(rawQuery)) {
+    return { type: 'SMALLTALK', notes: [] as Note[] };
+  }
+
   const rawLower = rawQuery.toLowerCase();
 
-  // Content tokens: remove EX_STOP too so "show me the language" → empty
   const contentToks = tokens(rawLower, EX_STOP);
 
-  // Check OVERVIEW first
   if (needsOverview(rawLower, contentToks, [...SELFREF])) {
     return { type: 'OVERVIEW', notes: [n7] };
   }
 
-  // BM25 query with R1 config (syn + numVeto + tau=1.5)
   const r = query(rawQuery, index, 1.5, true);
   const g = gate(r, 1.5, true);
 
   if (g.verdict === 'PASS') {
-    // Look up Note objects by id from index.docs
     const topNote = index.docs.find((d) => d.id === r.top.id)!;
     const second = r.scored[1];
     const notes: Note[] = [topNote];
@@ -87,6 +84,7 @@ export function route(
   }
 
   return { type: 'FADE', notes: [] };
+
 }
 
 // ── buildR1Index ──────────────────────────────────────────────────────────
