@@ -151,8 +151,17 @@ export async function ask(rawQuestion: string, opts: AskOptions = {}): Promise<A
   // 4. Route
   const routeResult = route(question, index, n7);
 
-     // Step 4.5: Smalltalk — in-character reply, no BM25, no model (PRD FR-6)
+  // Step 4.5: Smalltalk — in-character reply, no BM25, no model (PRD FR-6)
   if (routeResult.type === 'SMALLTALK') {
+    return {
+      message: {
+        id: makeId(),
+        role: 'ghost',
+        content: smalltalkReply(question),
+        ts,
+      },
+    };
+  }
 
   // 5. FADE route
   if (routeResult.type === 'FADE') {
