@@ -39,6 +39,9 @@ function appReducer(state: AppState, action: AppAction): AppState {
         // answers come straight from the notes, no model, no download.
         return { ...state, status: 'ready', liteMode: true, loadPhase: 'idle' };
       }
+      return { ...state, status: 'awaiting_consent', loadPhase: 'idle' };
+
+        case 'START_DOWNLOAD':
       return { ...state, status: 'loading', loadPhase: 'downloading' };
 
     case 'LOAD_PROGRESS':
@@ -152,16 +155,8 @@ export default function App() {
       setCapResult(cap);
       dispatch({ type: 'PROBE_DONE', cap });
 
-      if (cap.blocked) return; // Lite mode — no engine to load
-
-      // Load WebLLM engine
-      try {
-        await getEngine((pct) => dispatch({ type: 'LOAD_PROGRESS', pct }));
-        dispatch({ type: 'ENGINE_READY' });
-      } catch (err) {
-        dispatch({ type: 'ENGINE_ERROR', msg: String(err) });
-      }
-    }
+      // Engine load now starts only on user click (see handleStartDownload)
+      // PRD FR-2: no model download without user consent
 
     init().catch((err) => {
       dispatch({ type: 'FATAL_ERROR', msg: String(err) });
@@ -182,6 +177,18 @@ export default function App() {
       dispatch({ type: 'GHOST_FADE', reason: String(err) });
     }
   }, [inputText, state.status, state.liteMode]);
+
+  // Handle spell result from SpellPanel
+    // Start model download — called only on explicit user click (PRD FR-2)
+  const handleStartDownload = useCallback(async () => {
+    dispatch({ type: 'START_DOWNLOAD' });
+    try {
+      await getEngine((pct) => dispatch({ type: 'LOAD_PROGRESS', pct }));
+      dispatch({ type: 'ENGINE_READY' });
+    } catch (err) {
+      dispatch({ type: 'ENGINE_ERROR', msg: String(err) });
+    }
+  }, []);
 
   // Handle spell result from SpellPanel
   const handleSpellResult = useCallback(
@@ -214,6 +221,7 @@ export default function App() {
   const isReady = state.status === 'ready';
   const isLoading = state.status === 'loading';
   const isIncompatible = state.status === 'incompatible';
+  const isAwaitingConsent = state.status === 'awaiting_consent';
 
   return (
     <div className="app">
@@ -239,6 +247,19 @@ export default function App() {
 
         {!isIncompatible && state.liteMode && (
           <CapabilityBanner reason={capResult?.blocked ?? state.error ?? 'The model could not be loaded'} />
+        )}
+
+                {isAwaitingConsent && (
+          <div className="consent-gate">
+            <p className="consent-gate__info">
+              {capResult?.hasModelInCache
+                ? 'Model found in browser cache (~711 MB). Click to load it.'
+                : 'Full mode requires downloading ~711 MB. Click when ready.'}
+            </p>
+            <button className="summon-btn" onClick={handleStartDownload}>
+              {capResult?.hasModelInCache ? '👻 Awaken' : '👻 Summon (~711 MB)'}
+            </button>
+          </div>
         )}
 
         {isLoading && (
