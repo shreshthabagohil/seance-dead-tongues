@@ -35,7 +35,17 @@ export function needsOverview(
  * @param index     pre-built BM25 index
  * @param n7        the N7 "about snobol4" note (used for OVERVIEW route)
  */
+// Smalltalk detection (PRD FR-6) — greetings/thanks/help bypass BM25
+const SMALLTALK_RE = /^\s*(hi+|hello+|hey+|thanks?|thank you|bye|goodbye|help|howdy|what can you do|who are you)\W*$/i;
+
+function isSmalltalk(raw: string): boolean {
+  return SMALLTALK_RE.test(raw.trim());
+}
+
 export function route(
+    if (isSmalltalk(rawQuery)) {
+    return { type: 'SMALLTALK', notes: [] };
+  }
   rawQuery: string,
   index: BM25Index,
   n7: Note
