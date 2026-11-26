@@ -208,7 +208,7 @@ export default function App() {
         spellResult: { spellId, status: status as 'ok' | 'error' | 'limit' | 'timeout', output },
         ts: Date.now(),
       };
-      dispatch({ type: 'GHOST_ANSWER', msg });
+      dispatch({ type: 'SPELL_RESULT', msg });
     },
     [spells]
   );
