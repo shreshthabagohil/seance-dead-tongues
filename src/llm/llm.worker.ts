@@ -9,7 +9,7 @@ import { WebWorkerMLCEngineHandler } from '@mlc-ai/web-llm';
 // Capability stripping — LLM worker doesn't need these
 (self as unknown as Record<string, unknown>).XMLHttpRequest = undefined;
 (self as unknown as Record<string, unknown>).WebSocket = undefined;
-(self as unknown as Record<string, unknown>).indexedDB = undefined;
+try { (self as unknown as Record<string, unknown>).indexedDB = undefined; } catch { /* read-only getter in Chromium workers — ignore */ }
 // NOTE: fetch and caches MUST remain — WebLLM uses them to download/cache model weights
 
 const handler = new WebWorkerMLCEngineHandler();
