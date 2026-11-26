@@ -102,11 +102,10 @@ async function generateWithWatchdog(
 export async function ask(rawQuestion: string, opts: AskOptions = {}): Promise<AskResult> {
   const notes = _notes;
   const index = _index;
-  const corpusVocab = _corpusVocab;
 
-  if (!notes || !index || !corpusVocab) {
-    throw new Error('Pipeline not initialized — call initPipeline() first');
-  }
+  if (!notes || !index) {
+  throw new Error('Pipeline not initialized — call initPipeline() first');
+}
 
   const n7 = notes.find((n) => n.id === 'N7')!;
   const ts = Date.now();
