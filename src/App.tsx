@@ -39,9 +39,11 @@ function appReducer(state: AppState, action: AppAction): AppState {
         // answers come straight from the notes, no model, no download.
         return { ...state, status: 'ready', liteMode: true, loadPhase: 'idle' };
       }
+      // Probe passed — wait for user to click Awaken/Summon (PRD FR-2)
       return { ...state, status: 'awaiting_consent', loadPhase: 'idle' };
 
-        case 'START_DOWNLOAD':
+    case 'START_DOWNLOAD':
+      // User clicked — now it's safe to start the download
       return { ...state, status: 'loading', loadPhase: 'downloading' };
 
     case 'LOAD_PROGRESS':
@@ -130,7 +132,8 @@ export default function App() {
   const inputRef = useRef<HTMLInputElement>(null);
   const [inputText, setInputText] = React.useState('');
 
-  // Load data + probe capabilities + init engine on mount
+  // Load data + probe capabilities on mount.
+  // Engine load does NOT start here — it starts only on user click (PRD FR-2).
   useEffect(() => {
     async function init() {
       // Load notes and spells. If this fails there is no data to answer
@@ -150,13 +153,11 @@ export default function App() {
         return;
       }
 
-      // Capability probe
+      // Capability probe — sets status to 'awaiting_consent' or 'ready' (lite)
       const cap = await probeCapabilities();
       setCapResult(cap);
       dispatch({ type: 'PROBE_DONE', cap });
-
-      // Engine load now starts only on user click (see handleStartDownload)
-      // PRD FR-2: no model download without user consent
+    }
 
     init().catch((err) => {
       dispatch({ type: 'FATAL_ERROR', msg: String(err) });
@@ -178,8 +179,7 @@ export default function App() {
     }
   }, [inputText, state.status, state.liteMode]);
 
-  // Handle spell result from SpellPanel
-    // Start model download — called only on explicit user click (PRD FR-2)
+  // Start model download — called only on explicit user click (PRD FR-2)
   const handleStartDownload = useCallback(async () => {
     dispatch({ type: 'START_DOWNLOAD' });
     try {
@@ -249,11 +249,11 @@ export default function App() {
           <CapabilityBanner reason={capResult?.blocked ?? state.error ?? 'The model could not be loaded'} />
         )}
 
-                {isAwaitingConsent && (
+        {isAwaitingConsent && (
           <div className="consent-gate">
             <p className="consent-gate__info">
               {capResult?.hasModelInCache
-                ? 'Model found in browser cache (~711 MB). Click to load it.'
+                ? 'Model found in browser cache. Click to load it.'
                 : 'Full mode requires downloading ~711 MB. Click when ready.'}
             </p>
             <button className="summon-btn" onClick={handleStartDownload}>
