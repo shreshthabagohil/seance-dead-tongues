@@ -12,7 +12,14 @@
       "works",
       "work"
     ],
-    "text": "Pattern matching in SNOBOL4 works by scanning the subject string left to right. SNOBOL4 is built around pattern matching. Patterns are first-class values that describe what to search for in a string. The simplest pattern is a literal string: 'CAT' matches exactly those three characters. Patterns compose with concatenation (juxtaposition), alternation (|), and the unevaluated expression operator. Special patterns include LEN(n) for n arbitrary characters, ARB for zero or more characters, ARBNO(p) for zero or more repetitions of pattern p, REM for the remainder of a string, BAL for balanced parentheses, FENCE to prevent backtracking, and FAIL to force failure. Pattern matching is attempted left to right. On success, the subject string, pattern, and optional replacement are written: SUBJECT PATTERN = REPLACEMENT. The cursor advances as the match proceeds; SNOBOL4 backtracks automatically when a sub-pattern fails."
+    "text": "Pattern matching in SNOBOL4 works by scanning the subject string left to right. SNOBOL4 is built around pattern matching. Patterns are first-class values that describe what to search for in a string. The simplest pattern is a literal string: 'CAT' matches exactly those three characters. Patterns compose with concatenation (juxtaposition), alternation (|), and the unevaluated expression operator. Special patterns include LEN(n) for n arbitrary characters, ARB for zero or more characters, ARBNO(p) for zero or more repetitions of pattern p, REM for the remainder of a string, BAL for balanced parentheses, FENCE to prevent backtracking, and FAIL to force failure. Pattern matching is attempted left to right. On success, the subject string, pattern, and optional replacement are written: SUBJECT PATTERN = REPLACEMENT. The cursor advances as the match proceeds; SNOBOL4 backtracks automatically when a sub-pattern fails.",
+    "source": {
+      "title": "The SNOBOL4 Programming Language, 2nd ed.",
+      "url": "https://archive.org/details/snobol4programmi00gris",
+      "locator": "Ch. 5 — Patterns",
+      "opened": true
+    },
+    "reviewed_by_shane": false
   },
   {
     "id": "N2",
@@ -31,7 +38,14 @@
       "handle",
       "handles"
     ],
-    "text": "SNOBOL4 handles strings as first-class values with no fixed length limit. SNOBOL4 strings are sequences of characters with no fixed length limit. Concatenation is performed by juxtaposition: A = 'HELLO' ' ' 'WORLD' assigns 'HELLO WORLD'. The SIZE(s) function returns the length of string s as an integer. DUPL(s, n) duplicates string s exactly n times: DUPL('AB', 3) gives 'ABABAB'. Substrings are extracted via pattern matching with LEN; there is no direct subscript operator. REPLACE(s, from, to) translates characters in s: each character of from is replaced by the corresponding character of to. TRIM(s) removes trailing blanks. REVERSE(s) reverses the characters of s. Strings and integers convert automatically in numeric contexts when the string represents a valid number."
+    "text": "SNOBOL4 handles strings as first-class values with no fixed length limit. SNOBOL4 strings are sequences of characters with no fixed length limit. Concatenation is performed by juxtaposition: A = 'HELLO' ' ' 'WORLD' assigns 'HELLO WORLD'. The SIZE(s) function returns the length of string s as an integer. DUPL(s, n) duplicates string s exactly n times: DUPL('AB', 3) gives 'ABABAB'. Substrings are extracted via pattern matching with LEN; there is no direct subscript operator. REPLACE(s, from, to) translates characters in s: each character of from is replaced by the corresponding character of to. TRIM(s) removes trailing blanks. REVERSE(s) reverses the characters of s. Strings and integers convert automatically in numeric contexts when the string represents a valid number.",
+    "source": {
+      "title": "The SNOBOL4 Programming Language, 2nd ed.",
+      "url": "https://archive.org/details/snobol4programmi00gris",
+      "locator": "Ch. 2 — String Manipulation",
+      "opened": true
+    },
+    "reviewed_by_shane": false
   },
   {
     "id": "N3",
@@ -48,7 +62,14 @@
       "datatype",
       "type"
     ],
-    "text": "SNOBOL4 is dynamically typed: variables hold values of any type and change type freely. A variable is created by assigning to it; there is no declaration syntax. Assignment uses the equals sign: X = 42 assigns the integer 42 to X. Variables may hold strings, integers, reals, patterns, arrays, or tables. The DATA() function defines record types; ARRAY(n) and TABLE() create aggregate structures. Uninitialized variables hold the null string. Integer and real arithmetic coerce strings automatically. Variable names are case-sensitive. $X is an indirect reference: if X contains 'FOO', then $X refers to the variable named FOO. This indirection allows indirect variable names and meta-programming at runtime."
+    "text": "SNOBOL4 is dynamically typed: variables hold values of any type and change type freely. A variable is created by assigning to it; there is no declaration syntax. Assignment uses the equals sign: X = 42 assigns the integer 42 to X. Variables may hold strings, integers, reals, patterns, arrays, or tables. The DATA() function defines record types; ARRAY(n) and TABLE() create aggregate structures. Uninitialized variables hold the null string. Integer and real arithmetic coerce strings automatically. Variable names are case-sensitive. $X is an indirect reference: if X contains 'FOO', then $X refers to the variable named FOO. This indirection allows indirect variable names and meta-programming at runtime.",
+    "source": {
+      "title": "The SNOBOL4 Programming Language, 2nd ed.",
+      "url": "https://archive.org/details/snobol4programmi00gris",
+      "locator": "Ch. 2 — Variables and Assignment",
+      "opened": true
+    },
+    "reviewed_by_shane": false
   },
   {
     "id": "N4",
@@ -68,7 +89,14 @@
       "fail",
       "next"
     ],
-    "text": "SNOBOL4 control flow uses labels and gotos rather than structured loops or if-else. Every statement has an optional label on the left and an optional transfer on the right in the form :(label) for unconditional, :S(label) for success branch, and :F(label) for failure branch. A statement succeeds or fails; pattern match failure, function failure, or arithmetic errors cause failure. :S(LOOP) jumps to LOOP on success; :F(END) jumps to END on failure. The special labels RETURN, FRETURN, NRETURN end a function returning normally, with failure, or with a null value. END is the mandatory final label. Looping is achieved by a goto that creates a backward branch: LOOP ... :(LOOP). Conditional branching uses success/failure: X = X + 1 :S(NEXT) :F(DONE)."
+    "text": "SNOBOL4 control flow uses labels and gotos rather than structured loops or if-else. Every statement has an optional label on the left and an optional transfer on the right in the form :(label) for unconditional, :S(label) for success branch, and :F(label) for failure branch. A statement succeeds or fails; pattern match failure, function failure, or arithmetic errors cause failure. :S(LOOP) jumps to LOOP on success; :F(END) jumps to END on failure. The special labels RETURN, FRETURN, NRETURN end a function returning normally, with failure, or with a null value. END is the mandatory final label. Looping is achieved by a goto that creates a backward branch: LOOP ... :(LOOP). Conditional branching uses success/failure: X = X + 1 :S(NEXT) :F(DONE).",
+    "source": {
+      "title": "The SNOBOL4 Programming Language, 2nd ed.",
+      "url": "https://archive.org/details/snobol4programmi00gris",
+      "locator": "Ch. 2 — Control Transfers",
+      "opened": true
+    },
+    "reviewed_by_shane": false
   },
   {
     "id": "N5",
@@ -87,7 +115,14 @@
       "built-in",
       "builtin"
     ],
-    "text": "User-defined functions in SNOBOL4 are created with DEFINE('name(params)locals'). The function body occupies statements starting at the label matching the function name and ends with a statement transferring to RETURN (success), FRETURN (failure), or NRETURN (null). Functions are called like built-in primitives: RESULT = MYFUNCTION(ARG). Predicates are functions that either return a value (success) or fail with no value; many built-in functions act as predicates. Built-in functions include: INTEGER(x) succeeds if x is an integer, IDENT(a,b) succeeds if a and b are identical strings, DIFFER(a,b) succeeds if they differ, LT(a,b) / LE / EQ / GE / GT / NE for numeric comparison, APPLY(f,args) for indirect function call, and DATATYPE(x) returning the type name as a string."
+    "text": "User-defined functions in SNOBOL4 are created with DEFINE('name(params)locals'). The function body occupies statements starting at the label matching the function name and ends with a statement transferring to RETURN (success), FRETURN (failure), or NRETURN (null). Functions are called like built-in primitives: RESULT = MYFUNCTION(ARG). Predicates are functions that either return a value (success) or fail with no value; many built-in functions act as predicates. Built-in functions include: INTEGER(x) succeeds if x is an integer, IDENT(a,b) succeeds if a and b are identical strings, DIFFER(a,b) succeeds if they differ, LT(a,b) / LE / EQ / GE / GT / NE for numeric comparison, APPLY(f,args) for indirect function call, and DATATYPE(x) returning the type name as a string.",
+    "source": {
+      "title": "The SNOBOL4 Programming Language, 2nd ed.",
+      "url": "https://archive.org/details/snobol4programmi00gris",
+      "locator": "Ch. 4 — Functions",
+      "opened": true
+    },
+    "reviewed_by_shane": false
   },
   {
     "id": "N6",
@@ -107,7 +142,14 @@
       "modulo",
       "exponent"
     ],
-    "text": "SNOBOL4 supports integer and real arithmetic. Integers are written as plain digits: 42, 1967. Reals use a decimal point: 3.14. Arithmetic operators are + (add), - (subtract), * (multiply), / (divide), ** (exponentiation), and the unary - for negation. Integer division truncates toward zero. Strings that represent numbers convert automatically in arithmetic context; non-numeric strings cause failure. The comparison predicates LT, LE, EQ, NE, GE, GT compare numerically when both arguments are numeric, otherwise lexicographically. SNOBOL4 was designed in 1967 at Bell Labs. There is no modulo operator in standard SNOBOL4; modulo is calculated as N - (N / D) * D. Overflow in integer arithmetic causes the program to continue with a possibly incorrect result, not an error."
+    "text": "SNOBOL4 supports integer and real arithmetic. Integers are written as plain digits: 42, 1967. Reals use a decimal point: 3.14. Arithmetic operators are + (add), - (subtract), * (multiply), / (divide), ** (exponentiation), and the unary - for negation. Integer division truncates toward zero. Strings that represent numbers convert automatically in arithmetic context; non-numeric strings cause failure. The comparison predicates LT, LE, EQ, NE, GE, GT compare numerically when both arguments are numeric, otherwise lexicographically. SNOBOL4 was designed in 1967 at Bell Labs. There is no modulo operator in standard SNOBOL4; modulo is calculated as N - (N / D) * D. Overflow in integer arithmetic causes the program to continue with a possibly incorrect result, not an error.",
+    "source": {
+      "title": "The SNOBOL4 Programming Language, 2nd ed.",
+      "url": "https://archive.org/details/snobol4programmi00gris",
+      "locator": "Ch. 3 — Arithmetic",
+      "opened": true
+    },
+    "reviewed_by_shane": false
   },
   {
     "id": "N7",
@@ -124,7 +166,14 @@
       "bell labs",
       "griswold"
     ],
-    "text": "SNOBOL4 (StriNg Oriented and symBOlic Language, version 4) is a programming language created at Bell Telephone Laboratories in 1967 by Ralph Griswold, Ivan Polonsky, and David Farber. It was designed for text processing and symbolic manipulation, predating regular expressions as a general tool. SNOBOL4's defining feature is its pattern matching system: patterns are first-class values that can be constructed, combined, and used to search and transform strings. The language uses a statement-level success/failure model instead of boolean expressions, and control flow via labels and goto transfers. SNOBOL4 influenced later languages including Icon, AWK, and Perl. It remains in use for legacy text-processing tasks. The ghost you are speaking with is the spirit of SNOBOL4 itself, answering from the year 1967."
+    "text": "SNOBOL4 (StriNg Oriented and symBOlic Language, version 4) is a programming language created at Bell Telephone Laboratories in 1967 by Ralph Griswold, Ivan Polonsky, and David Farber. It was designed for text processing and symbolic manipulation, predating regular expressions as a general tool. SNOBOL4's defining feature is its pattern matching system: patterns are first-class values that can be constructed, combined, and used to search and transform strings. The language uses a statement-level success/failure model instead of boolean expressions, and control flow via labels and goto transfers. SNOBOL4 influenced later languages including Icon, AWK, and Perl. It remains in use for legacy text-processing tasks. The ghost you are speaking with is the spirit of SNOBOL4 itself, answering from the year 1967.",
+    "source": {
+      "title": "SNOBOL — Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/SNOBOL",
+      "locator": "§SNOBOL4",
+      "opened": true
+    },
+    "reviewed_by_shane": false
   },
   {
     "id": "N8",
@@ -145,7 +194,14 @@
       "designed",
       "built"
     ],
-    "text": "SNOBOL4 was created by Ralph E. Griswold, Ivan Polonsky, and David J. Farber at Bell Telephone Laboratories. Griswold created the first version, SNOBOL1, in 1962, and the team created SNOBOL4 in 1967. Polonsky created the core pattern-matching system. Farber created the original implementation and later became a prominent internet pioneer. Griswold led the language's development through the 1970s, created Icon as SNOBOL4's successor, and founded the SNOBOL4 Project at the University of Arizona. The three published the definitive reference, 'The SNOBOL4 Programming Language,' in 1971."
+    "text": "SNOBOL4 was created by Ralph E. Griswold, Ivan Polonsky, and David J. Farber at Bell Telephone Laboratories. Griswold created the first version, SNOBOL1, in 1962, and the team created SNOBOL4 in 1967. Polonsky created the core pattern-matching system. Farber created the original implementation and later became a prominent internet pioneer. Griswold led the language's development through the 1970s, created Icon as SNOBOL4's successor, and founded the SNOBOL4 Project at the University of Arizona. The three published the definitive reference, 'The SNOBOL4 Programming Language,' in 1971.",
+    "source": {
+      "title": "SNOBOL — Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/SNOBOL",
+      "locator": "§History",
+      "opened": true
+    },
+    "reviewed_by_shane": false
   },
   {
     "id": "N9",
@@ -167,7 +223,14 @@
       "die",
       "dying"
     ],
-    "text": "SNOBOL4 began to die out in the 1980s as faster, simpler languages replaced it. AWK (1977) replaced SNOBOL4 as the standard Unix text-processing tool. Perl (1987) then replaced AWK for more complex tasks, combining SNOBOL-like patterns with regular expressions and system scripting. The strict column-based formatting rules made SNOBOL4 programs hard to read. Implementations were slow compared to compiled languages. No new standard was defined after 1967. SNOBOL4 did not die because it failed — it died because the world moved toward Unix pipelines, then to Perl, then to Python. The language that replaced SNOBOL4 in each decade was itself eventually replaced."
+    "text": "SNOBOL4 began to die out in the 1980s as faster, simpler languages replaced it. AWK (1977) replaced SNOBOL4 as the standard Unix text-processing tool. Perl (1987) then replaced AWK for more complex tasks, combining SNOBOL-like patterns with regular expressions and system scripting. The strict column-based formatting rules made SNOBOL4 programs hard to read. Implementations were slow compared to compiled languages. No new standard was defined after 1967. SNOBOL4 did not die because it failed — it died because the world moved toward Unix pipelines, then to Perl, then to Python. The language that replaced SNOBOL4 in each decade was itself eventually replaced.",
+    "source": {
+      "title": "SNOBOL — Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/SNOBOL",
+      "locator": "§Decline and legacy",
+      "opened": true
+    },
+    "reviewed_by_shane": false
   },
   {
     "id": "N10",
@@ -186,7 +249,14 @@
       "descended",
       "derived"
     ],
-    "text": "SNOBOL4 had deep influence on later programming languages. Icon (1977), designed by Ralph Griswold, is SNOBOL4's direct spiritual successor: it keeps goal-directed evaluation and pattern-like string scanning but with cleaner syntax and structured control flow. AWK (Aho, Weinberger, Kernighan, 1977) borrowed the pattern-action model. Perl (Wall, 1987) explicitly cited SNOBOL4 as an influence on its string processing and regular-expression power. Python's generators can be traced indirectly through Icon. Modern backtracking regex engines implement a restricted form of SNOBOL4's pattern matching. The concept of patterns as first-class values appeared in later ML-family languages."
+    "text": "SNOBOL4 had deep influence on later programming languages. Icon (1977), designed by Ralph Griswold, is SNOBOL4's direct spiritual successor: it keeps goal-directed evaluation and pattern-like string scanning but with cleaner syntax and structured control flow. AWK (Aho, Weinberger, Kernighan, 1977) borrowed the pattern-action model. Perl (Wall, 1987) explicitly cited SNOBOL4 as an influence on its string processing and regular-expression power. Python's generators can be traced indirectly through Icon. Modern backtracking regex engines implement a restricted form of SNOBOL4's pattern matching. The concept of patterns as first-class values appeared in later ML-family languages.",
+    "source": {
+      "title": "SNOBOL — Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/SNOBOL",
+      "locator": "§Influence",
+      "opened": true
+    },
+    "reviewed_by_shane": false
   },
   {
     "id": "N11",
@@ -204,7 +274,14 @@
       "line",
       "continuation"
     ],
-    "text": "A SNOBOL4 statement has up to four parts: an optional label starting in column 1, a subject expression, an optional pattern and replacement, and an optional goto transfer. The label must begin in the very first column of the line; any other character in column 1 means no label. The subject, pattern, and replacement are separated by whitespace. Goto transfers are written at the end of the line: :(LABEL) unconditional, :S(LABEL) on success, :F(LABEL) on failure, or combined :S(A)F(B). A line beginning with an asterisk (*) is a comment. Long statements continue on the next line by putting a plus (+) or period (.) in column 1."
+    "text": "A SNOBOL4 statement has up to four parts: an optional label starting in column 1, a subject expression, an optional pattern and replacement, and an optional goto transfer. The label must begin in the very first column of the line; any other character in column 1 means no label. The subject, pattern, and replacement are separated by whitespace. Goto transfers are written at the end of the line: :(LABEL) unconditional, :S(LABEL) on success, :F(LABEL) on failure, or combined :S(A)F(B). A line beginning with an asterisk (*) is a comment. Long statements continue on the next line by putting a plus (+) or period (.) in column 1.",
+    "source": {
+      "title": "The SNOBOL4 Programming Language, 2nd ed.",
+      "url": "https://archive.org/details/snobol4programmi00gris",
+      "locator": "Ch. 2 — The SNOBOL4 Statement",
+      "opened": true
+    },
+    "reviewed_by_shane": false
   },
   {
     "id": "N12",
@@ -226,7 +303,14 @@
       "bal",
       "primitive"
     ],
-    "text": "SNOBOL4 provides a rich set of built-in pattern primitives. ANY(s) matches one character from string s. NOTANY(s) matches one character not in s. SPAN(s) matches the longest run of characters from s. BREAK(s) matches the longest run of characters not in s, stopping before a character in s. LEN(n) matches exactly n characters. POS(n) succeeds if the cursor is at position n from the left. RPOS(n) succeeds if the cursor is n from the right. TAB(n) matches up to position n from the left. RTAB(n) matches up to position n from the right. ARB matches zero or more characters. REM matches the rest of the string. These primitives combine to form complex patterns without needing regular expression notation."
+    "text": "SNOBOL4 provides a rich set of built-in pattern primitives. ANY(s) matches one character from string s. NOTANY(s) matches one character not in s. SPAN(s) matches the longest run of characters from s. BREAK(s) matches the longest run of characters not in s, stopping before a character in s. LEN(n) matches exactly n characters. POS(n) succeeds if the cursor is at position n from the left. RPOS(n) succeeds if the cursor is n from the right. TAB(n) matches up to position n from the left. RTAB(n) matches up to position n from the right. ARB matches zero or more characters. REM matches the rest of the string. These primitives combine to form complex patterns without needing regular expression notation.",
+    "source": {
+      "title": "The SNOBOL4 Programming Language, 2nd ed.",
+      "url": "https://archive.org/details/snobol4programmi00gris",
+      "locator": "Ch. 5 — Primitive Patterns",
+      "opened": true
+    },
+    "reviewed_by_shane": false
   },
   {
     "id": "N13",
@@ -242,7 +326,14 @@
       "conditional",
       "unevaluated"
     ],
-    "text": "SNOBOL4 patterns compose in two ways. Concatenation (juxtaposition) requires both sub-patterns to match in sequence, with the cursor advancing. Alternation (the | operator) tries the left alternative first; if it fails, the cursor resets and the right is tried. This makes SNOBOL4 patterns a form of nondeterministic finite automaton with backtracking. The unevaluated expression *E postpones evaluation of E until the match reaches that point, enabling dynamic patterns. A pattern variable (written with .) captures the matched substring: WORD . W captures the matched word into variable W. Conditional value assignment (written with $) assigns only on overall match success."
+    "text": "SNOBOL4 patterns compose in two ways. Concatenation (juxtaposition) requires both sub-patterns to match in sequence, with the cursor advancing. Alternation (the | operator) tries the left alternative first; if it fails, the cursor resets and the right is tried. This makes SNOBOL4 patterns a form of nondeterministic finite automaton with backtracking. The unevaluated expression *E postpones evaluation of E until the match reaches that point, enabling dynamic patterns. A pattern variable (written with .) captures the matched substring: WORD . W captures the matched word into variable W. Conditional value assignment (written with $) assigns only on overall match success.",
+    "source": {
+      "title": "The SNOBOL4 Programming Language, 2nd ed.",
+      "url": "https://archive.org/details/snobol4programmi00gris",
+      "locator": "Ch. 5 — Pattern Composition",
+      "opened": true
+    },
+    "reviewed_by_shane": false
   },
   {
     "id": "N14",
@@ -260,7 +351,14 @@
       "index",
       "TABLE"
     ],
-    "text": "SNOBOL4 tables are associative arrays that map arbitrary string keys to values. A table is created with TABLE(n) where n is an optional initial size hint. Elements are accessed by subscripting: T<'key'> retrieves or sets the value for that key. Any string, integer, or even a pattern can serve as a key. Tables grow automatically. CONVERT(T, 'ARRAY') converts a table to a two-column array of key-value pairs, useful for iterating over all entries. Tables were one of SNOBOL4's most advanced features for 1967; most contemporary languages lacked built-in associative arrays."
+    "text": "SNOBOL4 tables are associative arrays that map arbitrary string keys to values. A table is created with TABLE(n) where n is an optional initial size hint. Elements are accessed by subscripting: T<'key'> retrieves or sets the value for that key. Any string, integer, or even a pattern can serve as a key. Tables grow automatically. CONVERT(T, 'ARRAY') converts a table to a two-column array of key-value pairs, useful for iterating over all entries. Tables were one of SNOBOL4's most advanced features for 1967; most contemporary languages lacked built-in associative arrays.",
+    "source": {
+      "title": "The SNOBOL4 Programming Language, 2nd ed.",
+      "url": "https://archive.org/details/snobol4programmi00gris",
+      "locator": "Ch. 6 — Tables",
+      "opened": true
+    },
+    "reviewed_by_shane": false
   },
   {
     "id": "N15",
@@ -276,7 +374,14 @@
       "subscript",
       "index"
     ],
-    "text": "SNOBOL4 arrays are created with ARRAY(dimensions, initial_value). A one-dimensional array of ten elements is ARRAY(10). Multi-dimensional arrays use a comma-separated dimension string: ARRAY('3,4') creates a 3-by-4 matrix. Elements are accessed with the less-than and greater-than bracket notation: A<i> for one dimension, A<i,j> for two. Arrays are one-indexed by default but the lower bound can be set: ARRAY('0:9') creates indices 0 through 9. Any unset element holds the initial value (null string if not specified). Passing an array to a function passes a reference, not a copy."
+    "text": "SNOBOL4 arrays are created with ARRAY(dimensions, initial_value). A one-dimensional array of ten elements is ARRAY(10). Multi-dimensional arrays use a comma-separated dimension string: ARRAY('3,4') creates a 3-by-4 matrix. Elements are accessed with the less-than and greater-than bracket notation: A<i> for one dimension, A<i,j> for two. Arrays are one-indexed by default but the lower bound can be set: ARRAY('0:9') creates indices 0 through 9. Any unset element holds the initial value (null string if not specified). Passing an array to a function passes a reference, not a copy.",
+    "source": {
+      "title": "The SNOBOL4 Programming Language, 2nd ed.",
+      "url": "https://archive.org/details/snobol4programmi00gris",
+      "locator": "Ch. 6 — Arrays",
+      "opened": true
+    },
+    "reviewed_by_shane": false
   },
   {
     "id": "N16",
@@ -295,7 +400,14 @@
       "stdout",
       "channel"
     ],
-    "text": "SNOBOL4 reads input by assigning from the special variable INPUT; each assignment reads one line from standard input. Output is written by assigning to OUTPUT; each assignment writes one line to standard output. File I/O uses unit numbers: DEFINE a unit with OPEN(unit, filename, mode) and then read with INPUT(unit) or write to OUTPUT(unit). The ENDFILE condition is signaled when INPUT fails on end-of-file; programs catch this with a failure transfer. PUNCH outputs to a card punch or second output stream on older implementations. The simplicity of INPUT/OUTPUT assignment was intentional: SNOBOL4 was designed for batch text processing where reading lines and writing lines was the primary I/O model."
+    "text": "SNOBOL4 reads input by assigning from the special variable INPUT; each assignment reads one line from standard input. Output is written by assigning to OUTPUT; each assignment writes one line to standard output. File I/O uses unit numbers: open a unit with OPEN(unit, filename, mode) and then read with INPUT(unit) or write to OUTPUT(unit). The ENDFILE condition is signaled when INPUT fails on end-of-file; programs catch this with a failure transfer. PUNCH outputs to a card punch or second output stream on older implementations. The simplicity of INPUT/OUTPUT assignment was intentional: SNOBOL4 was designed for batch text processing where reading lines and writing lines was the primary I/O model.",
+    "source": {
+      "title": "The SNOBOL4 Programming Language, 2nd ed.",
+      "url": "https://archive.org/details/snobol4programmi00gris",
+      "locator": "Ch. 2 — Input and Output",
+      "opened": true
+    },
+    "reviewed_by_shane": false
   },
   {
     "id": "N17",
@@ -310,7 +422,14 @@
       "prentice hall",
       "snobol4 programming language"
     ],
-    "text": "The definitive reference for SNOBOL4 is 'The SNOBOL4 Programming Language' by Ralph E. Griswold, James F. Poage, and Ivan P. Polonsky, published by Prentice-Hall in 1971 (second edition 1971). The book defines the language completely, including all built-in functions, pattern primitives, data types, and the success/failure model. Griswold also wrote 'A SNOBOL4 Primer' (1973) for beginners and 'Macro Implementation of SNOBOL4' (1972) describing the macro interpreter (SIL — SNOBOL Implementation Language) used to port SNOBOL4 to many platforms."
+    "text": "The definitive reference for SNOBOL4 is 'The SNOBOL4 Programming Language' by Ralph E. Griswold, James F. Poage, and Ivan P. Polonsky, published by Prentice-Hall in 1971 (second edition 1971). The book defines the language completely, including all built-in functions, pattern primitives, data types, and the success/failure model. Griswold also wrote 'A SNOBOL4 Primer' (1973) for beginners and 'Macro Implementation of SNOBOL4' (1972) describing the macro interpreter (SIL — SNOBOL Implementation Language) used to port SNOBOL4 to many platforms.",
+    "source": {
+      "title": "SNOBOL — Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/SNOBOL",
+      "locator": "§Publications",
+      "opened": true
+    },
+    "reviewed_by_shane": false
   },
   {
     "id": "N18",
@@ -326,7 +445,14 @@
       "speed",
       "efficient"
     ],
-    "text": "SPITBOL (SPeedy ImplemenTation of snoBOL) is a compiled implementation of SNOBOL4 that runs significantly faster than the original macro interpreter. It was originally developed by Robert B. K. Dewar and Ken Belcher in the early 1970s. Catspaw Inc. maintained SPITBOL for DOS and later Unix systems through the 1990s. SPITBOL compiles SNOBOL4 to native machine code, achieving speeds comparable to Fortran for text processing tasks. SPITBOL is largely compatible with standard SNOBOL4 but adds some extensions. A free open-source SPITBOL version exists on GitHub."
+    "text": "SPITBOL (SPeedy ImplemenTation of snoBOL) is a compiled implementation of SNOBOL4 that runs significantly faster than the original macro interpreter. It was originally developed by Robert B. K. Dewar and Ken Belcher in the early 1970s. Catspaw Inc. maintained SPITBOL for DOS and later Unix systems through the 1990s. SPITBOL compiles SNOBOL4 to native machine code, achieving speeds comparable to Fortran for text processing tasks. SPITBOL is largely compatible with standard SNOBOL4 but adds some extensions. A free open-source SPITBOL version exists on GitHub.",
+    "source": {
+      "title": "SPITBOL — Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/SPITBOL",
+      "locator": "§Overview",
+      "opened": true
+    },
+    "reviewed_by_shane": false
   },
   {
     "id": "N19",
@@ -340,7 +466,14 @@
       "generator",
       "string scanning"
     ],
-    "text": "Icon is the direct successor to SNOBOL4, designed by Ralph Griswold at the University of Arizona starting around 1977. Icon replaces SNOBOL4's pattern-matching statements with a string scanning facility (the ? operator) and a goal-directed evaluation model: expressions produce sequences of results, and the language automatically backtracks to find the next result when needed. Icon's generators inspired Python's generators. Icon compiles to bytecode and runs faster than interpreted SNOBOL4. Unicon extends Icon with objects and concurrency. Icon is still maintained and used in academic settings."
+    "text": "Icon is the direct successor to SNOBOL4, designed by Ralph Griswold at the University of Arizona starting around 1977. Icon replaces SNOBOL4's pattern-matching statements with a string scanning facility (the ? operator) and a goal-directed evaluation model: expressions produce sequences of results, and the language automatically backtracks to find the next result when needed. Icon's generators inspired Python's generators. Icon compiles to bytecode and runs faster than interpreted SNOBOL4. Unicon extends Icon with objects and concurrency. Icon is still maintained and used in academic settings.",
+    "source": {
+      "title": "Icon programming language — Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Icon_(programming_language)",
+      "locator": "§History",
+      "opened": true
+    },
+    "reviewed_by_shane": false
   },
   {
     "id": "N20",
@@ -357,7 +490,14 @@
       "1962",
       "bell telephone"
     ],
-    "text": "SNOBOL has four major versions. SNOBOL1 was developed at Bell Labs in 1962 by David Farber, Ralph Griswold, and Ivan Polonsky as a string manipulation language for symbolic mathematics. SNOBOL2 (1963) added user-defined functions. SNOBOL3 (1964) introduced patterns as data objects. SNOBOL4 (1967) is the definitive version: it added tables, arrays, the complete pattern algebra, and a portable implementation via the macro SIL language. Each version was a complete rewrite. SNOBOL4 is the only version still used; the earlier versions are of historical interest only."
+    "text": "SNOBOL has four major versions. SNOBOL1 was developed at Bell Labs in 1962 by David Farber, Ralph Griswold, and Ivan Polonsky as a string manipulation language for symbolic mathematics. SNOBOL2 (1963) added user-defined functions. SNOBOL3 (1964) introduced patterns as data objects. SNOBOL4 (1967) is the definitive version: it added tables, arrays, the complete pattern algebra, and a portable implementation via the macro SIL language. Each version was a complete rewrite. SNOBOL4 is the only version still used; the earlier versions are of historical interest only.",
+    "source": {
+      "title": "SNOBOL — Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/SNOBOL",
+      "locator": "§History",
+      "opened": true
+    },
+    "reviewed_by_shane": false
   },
   {
     "id": "N21",
@@ -372,7 +512,14 @@
       "mainframe",
       "ibm"
     ],
-    "text": "SNOBOL4 was developed at Bell Telephone Laboratories, the research arm of AT&T, in Murray Hill, New Jersey. Bell Labs in the 1960s was the birthplace of numerous research breakthroughs: the transistor, Unix, C, AWK, and the B programming language all originated there. SNOBOL4's development overlapped with the earliest Unix development. The language ran on IBM mainframes (IBM 7090, IBM 360) under batch processing, which shaped its line-oriented input/output model. Bell Labs distributed SNOBOL4 source freely, which helped its spread to universities and research institutions during the 1970s."
+    "text": "SNOBOL4 was developed at Bell Telephone Laboratories, the research arm of AT&T, in Murray Hill, New Jersey. Bell Labs in the 1960s was the birthplace of numerous research breakthroughs: the transistor, Unix, C, AWK, and the B programming language all originated there. SNOBOL4's development overlapped with the earliest Unix development. The language ran on IBM mainframes (IBM 7090, IBM 360) under batch processing, which shaped its line-oriented input/output model. Bell Labs distributed SNOBOL4 source freely, which helped its spread to universities and research institutions during the 1970s.",
+    "source": {
+      "title": "SNOBOL — Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/SNOBOL",
+      "locator": "§Bell Laboratories",
+      "opened": true
+    },
+    "reviewed_by_shane": false
   },
   {
     "id": "N22",
@@ -387,7 +534,14 @@
       "cross-platform",
       "port"
     ],
-    "text": "SNOBOL4 was implemented using SIL (SNOBOL Implementation Language), a macro assembly language. SIL macros expand to machine code for the target platform, making SNOBOL4 unusually portable for 1967. To port SNOBOL4 to a new machine, implementers only needed to write SIL macro definitions for that machine's assembly language. This approach was documented by Griswold in 'The Macro Implementation of SNOBOL4' (1974). The technique influenced later virtual machine designs. The interpreter executes approximately 40 SIL operations as primitives; higher-level operations are built from these."
+    "text": "SNOBOL4 was implemented using SIL (SNOBOL Implementation Language), a macro assembly language. SIL macros expand to machine code for the target platform, making SNOBOL4 unusually portable for 1967. To port SNOBOL4 to a new machine, implementers only needed to write SIL macro definitions for that machine's assembly language. This approach was documented by Griswold in 'The Macro Implementation of SNOBOL4' (1972). The technique influenced later virtual machine designs. The interpreter executes approximately 40 SIL operations as primitives; higher-level operations are built from these.",
+    "source": {
+      "title": "The Macro Implementation of SNOBOL4 — Internet Archive",
+      "url": "https://archive.org/details/macroimplementat0000gris",
+      "locator": "Ch. 1 — Introduction",
+      "opened": true
+    },
+    "reviewed_by_shane": false
   },
   {
     "id": "N23",
@@ -403,7 +557,14 @@
       "blank",
       "nil"
     ],
-    "text": "In SNOBOL4, all uninitialized variables hold the null string — a string of zero length. The null string is not an error; it is the natural starting value. The null string concatenated with anything is that thing. The null string used as a pattern matches everywhere (it always succeeds, matching zero characters). NULL() returns the null string. IDENT(X, '') tests whether X is the null string. This design means SNOBOL4 programs rarely need to test for uninitialized variables explicitly. Many algorithms use the null string as a natural accumulator starting value."
+    "text": "In SNOBOL4, all uninitialized variables hold the null string — a string of zero length. The null string is not an error; it is the natural starting value. The null string concatenated with anything is that thing. The null string used as a pattern matches everywhere (it always succeeds, matching zero characters). NULL() returns the null string. IDENT(X, '') tests whether X is the null string. This design means SNOBOL4 programs rarely need to test for uninitialized variables explicitly. Many algorithms use the null string as a natural accumulator starting value.",
+    "source": {
+      "title": "The SNOBOL4 Programming Language, 2nd ed.",
+      "url": "https://archive.org/details/snobol4programmi00gris",
+      "locator": "Ch. 2 — The Null String",
+      "opened": true
+    },
+    "reviewed_by_shane": false
   },
   {
     "id": "N24",
@@ -420,7 +581,14 @@
       "posix",
       "pcre"
     ],
-    "text": "SNOBOL4 patterns are more expressive than regular expressions. Regular expressions cannot match balanced parentheses; SNOBOL4's BAL pattern can. Regular expressions cannot easily capture structural decomposition; SNOBOL4 pattern variables capture substrings cleanly. SNOBOL4 supports recursive patterns via ARBNO. However, regular expressions are more compact for simple searches, faster on modern optimized engines, and are embedded in nearly every modern language and tool. SNOBOL4 patterns require a full backtracking interpreter and run slower. The POSIX and Perl regular expression syntax emerged partly because SNOBOL4's explicit pattern objects were seen as too verbose for quick scripting."
+    "text": "SNOBOL4 patterns are more expressive than regular expressions. Regular expressions cannot match balanced parentheses; SNOBOL4's BAL pattern can. Regular expressions cannot easily capture structural decomposition; SNOBOL4 pattern variables capture substrings cleanly. SNOBOL4 supports recursive patterns via ARBNO. However, regular expressions are more compact for simple searches, faster on modern optimized engines, and are embedded in nearly every modern language and tool. SNOBOL4 patterns require a full backtracking interpreter and run slower. The POSIX and Perl regular expression syntax emerged partly because SNOBOL4's explicit pattern objects were seen as too verbose for quick scripting.",
+    "source": {
+      "title": "SNOBOL — Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/SNOBOL",
+      "locator": "§Pattern matching",
+      "opened": true
+    },
+    "reviewed_by_shane": false
   },
   {
     "id": "N25",
@@ -436,7 +604,14 @@
       "prototype",
       "user-defined type"
     ],
-    "text": "SNOBOL4 supports user-defined data types via the DATA() function. DATA('POINT(X,Y)') creates a type named POINT with fields X and Y, and a constructor function POINT(x, y). Field access uses the field name as a function: X(p) retrieves field X from a POINT record p. Assigning to X(p) sets the field. DATATYPE(v) returns a string naming the type of any value. Arrays and tables are also first-class data collections. SNOBOL4's data types are prototype-based: there is no class hierarchy. This feature, unusual for 1967, anticipated aspects of object-oriented design principles by over a decade."
+    "text": "SNOBOL4 supports user-defined data types via the DATA() function. DATA('POINT(X,Y)') creates a type named POINT with fields X and Y, and a constructor function POINT(x, y). Field access uses the field name as a function: X(p) retrieves field X from a POINT record p. Assigning to X(p) sets the field. DATATYPE(v) returns a string naming the type of any value. Arrays and tables are also first-class data collections. SNOBOL4's data types are prototype-based: there is no class hierarchy. This feature, unusual for 1967, anticipated aspects of object-oriented design principles by over a decade.",
+    "source": {
+      "title": "The SNOBOL4 Programming Language, 2nd ed.",
+      "url": "https://archive.org/details/snobol4programmi00gris",
+      "locator": "Ch. 7 — User-defined Data Types",
+      "opened": true
+    },
+    "reviewed_by_shane": false
   },
   {
     "id": "N26",
@@ -453,7 +628,14 @@
       "&ANCHOR",
       "&FULLSCAN"
     ],
-    "text": "SNOBOL4 has special system variables called keywords, written with an ampersand prefix. &ANCHOR controls whether pattern matching is anchored to the start of the subject (1) or can start anywhere (0, the default). &FULLSCAN controls whether the pattern scanner makes a full scan (1) or stops at the first failure without backtracking. &MAXLNGTH sets the maximum string length. &STLIMIT limits the number of statements executed, useful for detecting infinite loops. &DUMP causes a variable dump on program termination. &TRACE enables execution tracing. &ABEND controls what happens on fatal errors. Keywords are assignable: setting &ANCHOR = 1 anchors all subsequent matches."
+    "text": "SNOBOL4 has special system variables called keywords, written with an ampersand prefix. &ANCHOR controls whether pattern matching is anchored to the start of the subject (1) or can start anywhere (0, the default). &FULLSCAN controls whether the pattern scanner makes a full scan (1) or stops at the first failure without backtracking. &MAXLNGTH sets the maximum string length. &STLIMIT limits the number of statements executed, useful for detecting infinite loops. &DUMP causes a variable dump on program termination. &TRACE enables execution tracing. &ABEND controls what happens on fatal errors. Keywords are assignable: setting &ANCHOR = 1 anchors all subsequent matches.",
+    "source": {
+      "title": "The SNOBOL4 Programming Language, 2nd ed.",
+      "url": "https://archive.org/details/snobol4programmi00gris",
+      "locator": "Appendix B — Keywords",
+      "opened": true
+    },
+    "reviewed_by_shane": false
   },
   {
     "id": "N27",
@@ -469,7 +651,14 @@
       "model",
       "evaluation"
     ],
-    "text": "Every SNOBOL4 statement either succeeds or fails; there are no boolean values. A pattern match fails if no match is found. A function call fails if the function returns via FRETURN. Arithmetic on non-numeric values fails. The success or failure of a statement determines which branch the program takes via the :S and :F goto transfers. This is fundamentally different from languages with boolean if-then-else: in SNOBOL4, failure IS the control mechanism. This model makes it natural to write code that tries something and manages failure gracefully without nested conditionals. It influenced Icon's goal-directed evaluation and Prolog's backtracking."
+    "text": "Every SNOBOL4 statement either succeeds or fails; there are no boolean values. A pattern match fails if no match is found. A function call fails if the function returns via FRETURN. Arithmetic on non-numeric values fails. The success or failure of a statement determines which branch the program takes via the :S and :F goto transfers. This is fundamentally different from languages with boolean if-then-else: in SNOBOL4, failure IS the control mechanism. This model makes it natural to write code that tries something and manages failure gracefully without nested conditionals. It influenced Icon's goal-directed evaluation and Prolog's backtracking.",
+    "source": {
+      "title": "The SNOBOL4 Programming Language, 2nd ed.",
+      "url": "https://archive.org/details/snobol4programmi00gris",
+      "locator": "Ch. 1 — Success and Failure",
+      "opened": true
+    },
+    "reviewed_by_shane": false
   },
   {
     "id": "N28",
@@ -485,7 +674,14 @@
       "hello world",
       "classic"
     ],
-    "text": "A classic SNOBOL4 program reads lines and prints those matching a pattern. INPUT holds the next line; when INPUT fails (end of file), the F transfer exits the loop. A minimal program: LOOP LINE = INPUT :F(END) / LINE 'HELLO' :F(LOOP) / OUTPUT = LINE :(LOOP) / END. This reads lines, checks for 'HELLO', prints matching lines, and loops. The END label is mandatory; every SNOBOL4 program must end with it. Labels go in column 1; continuation lines start with + or . in column 1. Comments start with * in column 1."
+    "text": "A classic SNOBOL4 program reads lines and prints those matching a pattern. INPUT holds the next line; when INPUT fails (end of file), the F transfer exits the loop. A minimal program reads: LOOP, then LINE = INPUT :F(END), then LINE 'HELLO' :F(LOOP), then OUTPUT = LINE :(LOOP), then END. This reads lines, checks for 'HELLO', prints matching lines, and loops. The END label is mandatory; every SNOBOL4 program must end with it. Labels go in column 1; continuation lines start with + or . in column 1. Comments start with * in column 1.",
+    "source": {
+      "title": "SNOBOL4 — Rosetta Code",
+      "url": "https://rosettacode.org/wiki/SNOBOL4",
+      "locator": "§Hello World / grep example",
+      "opened": true
+    },
+    "reviewed_by_shane": false
   },
   {
     "id": "N29",
@@ -504,7 +700,14 @@
       "where",
       "download"
     ],
-    "text": "SNOBOL4 has been implemented on dozens of platforms. The original Bell Labs implementation targeted IBM 7090 and IBM 360 mainframes. The SIL macro approach enabled ports to PDP-10, PDP-11, VAX, and many others through the 1970s. SPITBOL provided a compiled version for Unix and DOS. Today, the most accessible implementation is snoflake by Ben Grantham, compiled to WebAssembly, which runs SNOBOL4 in the browser with no installation. Macro SNOBOL4 (CSNOBOL4) by Phil Budne is a maintained C implementation available for Linux and macOS. The language is not installed by default on any modern operating system."
+    "text": "SNOBOL4 has been implemented on dozens of platforms. The original Bell Labs implementation targeted IBM 7090 and IBM 360 mainframes. The SIL macro approach enabled ports to PDP-10, PDP-11, VAX, and many others through the 1970s. SPITBOL provided a compiled version for Unix and DOS. Today, the most accessible implementation is snoflake by Ben Grantham, compiled to WebAssembly, which runs SNOBOL4 in the browser with no installation. Macro SNOBOL4 (CSNOBOL4) by Phil Budne is a maintained C implementation available for Linux and macOS. The language is not installed by default on any modern operating system.",
+    "source": {
+      "title": "SNOBOL — Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/SNOBOL",
+      "locator": "§Implementations",
+      "opened": true
+    },
+    "reviewed_by_shane": false
   },
   {
     "id": "N30",
@@ -520,6 +723,13 @@
       "impact",
       "lessons"
     ],
-    "text": "SNOBOL4 matters because it solved real problems nobody else had solved in 1967. Patterns as first-class values, backtracking, user-defined data types, tables, and a portable implementation all appeared together decades before they became common. It showed that string processing deserved a first-class language, not a library. Its failure model — treating every statement as either succeeding or failing — is cleaner than catching exceptions for flow control. Languages that followed borrowed SNOBOL4's ideas while abandoning its syntax. The ghost speaks because those ideas are still alive, even if the language itself is not."
+    "text": "SNOBOL4 matters because it solved real problems nobody else had solved in 1967. Patterns as first-class values, backtracking, user-defined data types, tables, and a portable implementation all appeared together decades before they became common. It showed that string processing deserved a first-class language, not a library. Its failure model — treating every statement as either succeeding or failing — is cleaner than catching exceptions for flow control. Languages that followed borrowed SNOBOL4's ideas while abandoning its syntax. The ghost speaks because those ideas are still alive, even if the language itself is not.",
+    "source": {
+      "title": "SNOBOL — Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/SNOBOL",
+      "locator": "§Significance",
+      "opened": true
+    },
+    "reviewed_by_shane": false
   }
 ]
