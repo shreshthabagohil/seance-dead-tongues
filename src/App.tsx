@@ -1,12 +1,11 @@
 import React, { useReducer, useEffect, useRef, useCallback } from 'react';
-import type { AppState, AppAction, ChatMessage, CapabilityResult } from './types';
+import type { AppState, AppAction, ChatMessage, CapabilityResult, Spell } from './types';
 import { MessageList } from './components/MessageList';
 import { SpellPanel } from './components/SpellPanel';
 import { CapabilityBanner } from './components/CapabilityBanner';
 import { ProgressBar } from './components/ProgressBar';
 import { probeCapabilities, getEngine } from './llm/engine';
 import { initPipeline, ask } from './brain/ask';
-import type { Spell } from './types';
 import './index.css';
 
 // ── Reducer ───────────────────────────────────────────────────────────────
