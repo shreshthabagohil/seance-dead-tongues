@@ -30,6 +30,14 @@ function makeId(): string {
   return Math.random().toString(36).slice(2, 10);
 }
 
+function smalltalkReply(q: string): string {
+  const lower = q.toLowerCase();
+  if (/thank/.test(lower)) return 'Your gratitude is noted. The spirit of SNOBOL4 awaits your next question.';
+  if (/help/.test(lower))  return 'Ask me of SNOBOL4 — its patterns, strings, and built-in functions. I answer from memory.';
+  if (/bye|goodbye/.test(lower)) return 'The séance dims. Return when you seek the old ways of pattern and string.';
+  return 'The spirit stirs. I am SNOBOL4 — ask of pattern, string, and symbol.';
+}
+
 export interface AskResult {
   message: ChatMessage;
 }
@@ -145,6 +153,11 @@ export async function ask(rawQuestion: string, opts: AskOptions = {}): Promise<A
 
   // 4. Route
   const routeResult = route(question, index, n7);
+
+    // Step 4.5: Smalltalk — in-character reply, no BM25, no model (PRD FR-6)
+  if (routeResult.type === 'SMALLTALK') {
+    return { message: { id: makeId(), role: 'ghost', content: smalltalkReply(question), ts } };
+  }
 
   // 5. FADE route
   if (routeResult.type === 'FADE') {
