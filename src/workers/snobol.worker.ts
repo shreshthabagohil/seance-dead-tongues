@@ -12,7 +12,7 @@
 (self as unknown as Record<string, unknown>).XMLHttpRequest = undefined;
 (self as unknown as Record<string, unknown>).WebSocket = undefined;
 (self as unknown as Record<string, unknown>).importScripts = undefined;
-(self as unknown as Record<string, unknown>).indexedDB = undefined;
+try { (self as unknown as Record<string, unknown>).indexedDB = undefined; } catch { /* read-only getter in Chromium workers — ignore */ }
 (self as unknown as Record<string, unknown>).caches = undefined;
 
 import { createSession } from 'snoflake';
