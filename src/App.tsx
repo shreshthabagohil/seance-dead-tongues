@@ -107,6 +107,10 @@ function appReducer(state: AppState, action: AppAction): AppState {
       };
     }
 
+        case 'SPELL_RESULT':
+      // Spell casts add message to chat but do NOT touch spirit meter counters
+      return { ...state, messages: [...state.messages, action.msg] };
+
     case 'RESET':
       return { ...INITIAL_STATE };
 
