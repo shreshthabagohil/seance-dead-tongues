@@ -151,10 +151,8 @@ export async function ask(rawQuestion: string, opts: AskOptions = {}): Promise<A
   // 4. Route
   const routeResult = route(question, index, n7);
 
-    // Step 4.5: Smalltalk — in-character reply, no BM25, no model (PRD FR-6)
+     // Step 4.5: Smalltalk — in-character reply, no BM25, no model (PRD FR-6)
   if (routeResult.type === 'SMALLTALK') {
-    return { message: { id: makeId(), role: 'ghost', content: smalltalkReply(question), ts } };
-  }
 
   // 5. FADE route
   if (routeResult.type === 'FADE') {
@@ -192,19 +190,20 @@ export async function ask(rawQuestion: string, opts: AskOptions = {}): Promise<A
     return { message: { id: makeId(), role: 'ghost', content: extractive, ts } };
   }
 
+    const retrievedVocab = buildCorpusVocab(routeResult.notes);
   let raw = await generateWithWatchdog(engine, prompt, 0.3, 100);
   let vResult = raw !== null
-    ? verify(raw, question, buildCorpusVocab(routeResult.notes), noteTexts)
+    ? verify(raw, question, retrievedVocab, noteTexts)
     : { ok: false, reason: 'no response (timeout or engine error)' };
 
   // 8. Retry once at a lower, more conservative temperature
   if (!vResult.ok) {
     raw = await generateWithWatchdog(engine, prompt, 0.15, 100);
     vResult = raw !== null
-      ? verify(raw, question, buildCorpusVocab(routeResult.notes), noteTexts)
+      ? verify(raw, question, retrievedVocab, noteTexts)
       : { ok: false, reason: 'no response (timeout or engine error)' };
   }
-
+  
   // 9. Still failing -> grounded extractive fallback
   if (!vResult.ok || raw === null) {
     return { message: { id: makeId(), role: 'ghost', content: extractive, ts } };
