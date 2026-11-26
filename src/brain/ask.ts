@@ -14,7 +14,6 @@ import type { MLCEngine } from '@mlc-ai/web-llm';
 
 let _index: BM25Index | null = null;
 let _notes: Note[] | null = null;
-let _corpusVocab: ReturnType<typeof buildCorpusVocab> | null = null;
 
 /**
  * Initialize the ask pipeline with loaded notes.
@@ -23,7 +22,6 @@ let _corpusVocab: ReturnType<typeof buildCorpusVocab> | null = null;
 export function initPipeline(notes: Note[]): void {
   _notes = notes;
   _index = buildR1Index(notes);
-  _corpusVocab = buildCorpusVocab(notes);
 }
 
 function makeId(): string {
@@ -197,14 +195,14 @@ export async function ask(rawQuestion: string, opts: AskOptions = {}): Promise<A
 
   let raw = await generateWithWatchdog(engine, prompt, 0.3, 100);
   let vResult = raw !== null
-    ? verify(raw, question, corpusVocab, noteTexts)
+    ? verify(raw, question, buildCorpusVocab(routeResult.notes), noteTexts)
     : { ok: false, reason: 'no response (timeout or engine error)' };
 
   // 8. Retry once at a lower, more conservative temperature
   if (!vResult.ok) {
     raw = await generateWithWatchdog(engine, prompt, 0.15, 100);
     vResult = raw !== null
-      ? verify(raw, question, corpusVocab, noteTexts)
+      ? verify(raw, question, buildCorpusVocab(routeResult.notes), noteTexts)
       : { ok: false, reason: 'no response (timeout or engine error)' };
   }
 
