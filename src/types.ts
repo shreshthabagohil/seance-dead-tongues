@@ -105,6 +105,7 @@ export interface AppState {
 
 export type AppAction =
   | { type: 'PROBE_DONE'; cap: CapabilityResult }
+  | { type: 'START_DOWNLOAD' }
   | { type: 'LOAD_PROGRESS'; pct: number }
   | { type: 'ENGINE_READY' }
   | { type: 'ENGINE_ERROR'; msg: string }
