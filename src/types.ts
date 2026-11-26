@@ -84,11 +84,12 @@ export interface ChatMessage {
 
 // App-level state
 export type AppStatus =
-  | 'boot'           // initial probe
-  | 'incompatible'   // GPU/shader-f16 missing
-  | 'loading'        // downloading model
-  | 'ready'          // chat enabled
-  | 'thinking';      // awaiting ghost response
+  | 'boot'               // initial probe
+  | 'incompatible'       // GPU/shader-f16 missing
+  | 'awaiting_consent'   // probe passed — waiting for user click
+  | 'loading'            // downloading model
+  | 'ready'              // chat enabled
+  | 'thinking';          // awaiting ghost response
 
 export interface AppState {
   status: AppStatus;
