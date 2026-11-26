@@ -113,4 +113,5 @@ export type AppAction =
   | { type: 'USER_MSG'; text: string }
   | { type: 'GHOST_ANSWER'; msg: ChatMessage }
   | { type: 'GHOST_FADE'; reason: string }
+  | { type: 'SPELL_RESULT'; msg: ChatMessage }
   | { type: 'RESET' };
