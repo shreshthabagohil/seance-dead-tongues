@@ -35,7 +35,7 @@ export interface QueryResult {
   scored: ScoredDoc[];          // all docs sorted by score desc, id asc
 }
 
-export type RouteType = 'BM25_PASS' | 'BM25_AMBIG' | 'OVERVIEW' | 'FADE';
+export type RouteType = 'BM25_PASS' | 'BM25_AMBIG' | 'OVERVIEW' | 'SMALLTALK' | 'FADE';
 
 export interface Route {
   type: RouteType;
